@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <AssemblyName>Xchain.net</AssemblyName>
+    <RootNamespace>Xchain.net</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BinanceDEXClient" Version="1.0.2.1" />
+  </ItemGroup>
+
+</Project>
