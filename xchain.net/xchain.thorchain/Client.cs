@@ -6,30 +6,45 @@ using System.Threading.Tasks;
 using Xchain.net.xchain.client;
 using Xchain.net.xchain.client.Models;
 using Xchain.net.xchain.cosmos.SDK;
+using Xchain.net.xchain.crypto;
 using Xchain.net.xchain.thorchain.Constants;
+using Xchain.net.xchain.thorchain.Exceptions;
 using Xchain.net.xchain.thorchain.Models;
 
 namespace Xchain.net.xchain.thorchain
 {
     public class Client : IXchainClient , IThorchianClient
     {
-        private readonly Network network;
-        private readonly string phrase;
-        private readonly ClientUrl clientUrl;
-        private readonly ExplorerUrl explorerUrl;
+        private string _phrase;
+
+        public string Phrase 
+        {
+            get => this._phrase;
+            set
+            {
+                if (this._phrase != value)
+                {
+                    if (XcahinCrypto.ValidatePhrase(value))
+                    {
+                        throw new PhraseNotValidException(value , "Invalid Phrase");
+                    }
+                    this._phrase = value;
+                }
+            }
+        }
+
 
         public Client(string phrase , ClientUrl clientUrl , ExplorerUrl explorerUrl , Network network = Network.testnet)
         {
-            this.network = network;
-            this.phrase = phrase;
-            this.clientUrl = clientUrl;
-            this.explorerUrl = explorerUrl;
+
 
             if (!string.IsNullOrEmpty(phrase))
             {
                 this.SetPhrase(phrase);
             }
+            Phrase = phrase;
         }
+
 
         public Task<string> Deposit(DepositParam @params)
         {
@@ -112,11 +127,6 @@ namespace Xchain.net.xchain.thorchain
         }
 
         public void SetNetwork(Network network)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string SetPhrase(string phrase)
         {
             throw new NotImplementedException();
         }

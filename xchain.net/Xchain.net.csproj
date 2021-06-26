@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="BinanceDEXClient" Version="1.0.2.1" />
+    <PackageReference Include="dotnetstandard-bip39" Version="1.0.2" />
   </ItemGroup>
 
 </Project>
