@@ -10,14 +10,16 @@ namespace Xchain.net.xchain.client
 {
     public interface IXchainClient
     {
-        void SetNetwork(Network network);
-        Network GetNetwork();
+        // Properties
+        string Phrase { get; set; }
+        Network Network { get; set; }
+        // Methods
+
         string GetExplorerUrl();
         string GetExplorerAddressUrl(string address);
         string GetExplorerTxUrl(string txId);
         Task<bool> ValidateAddress(string address);
         string GetAddress();
-        string Phrase { get; set; }
         Task<Balance> GetBalance(string address = "", List<Asset> assets = null);
         Task<TxPage> GetTransactions();
         Task<Tx> GetTranasctionData(string txId, string assetAddress);

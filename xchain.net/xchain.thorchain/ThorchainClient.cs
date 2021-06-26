@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using xchain.net.xchain.thorchain;
 using Xchain.net.xchain.client;
 using Xchain.net.xchain.client.Models;
 using Xchain.net.xchain.cosmos.SDK;
@@ -13,9 +14,11 @@ using Xchain.net.xchain.thorchain.Models;
 
 namespace Xchain.net.xchain.thorchain
 {
-    public class Client : IXchainClient , IThorchianClient
+    public class ThorchainClient : IXchainClient , IThorchianClient
     {
         private string _phrase;
+        private ClientUrl _clientUrl;
+        private Network _network;
 
         public string Phrase 
         {
@@ -33,16 +36,33 @@ namespace Xchain.net.xchain.thorchain
             }
         }
 
-
-        public Client(string phrase , ClientUrl clientUrl , ExplorerUrl explorerUrl , Network network = Network.testnet)
+        public ClientUrl ClientUrl
         {
+            get
+            {
+                return this._clientUrl;
+            }
+            set
+            {
+                this._clientUrl = value;
+                this.ThorClient = new CosmosSdkClient(); //TODO: must be complete with true arguments
+            }
+        }
+
+        public Network Network { get => this._network; set => this._network = value; }
+        public CosmosSdkClient ThorClient { get; set; }
 
 
+
+
+        public ThorchainClient(string phrase , ClientUrl clientUrl , ExplorerUrl explorerUrl , Network network = Network.testnet)
+        {
+            this.Network = network;
+            this.ClientUrl = clientUrl ?? Utils.GetDefaultClientUrl();
             if (!string.IsNullOrEmpty(phrase))
             {
-                this.SetPhrase(phrase);
+                this.Phrase = phrase;
             }
-            Phrase = phrase;
         }
 
 
@@ -57,11 +77,6 @@ namespace Xchain.net.xchain.thorchain
         }
 
         public Task<Balance> GetBalance(string address = "", List<Asset> assets = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public NodeUrl GetClientUrl()
         {
             throw new NotImplementedException();
         }
@@ -96,11 +111,6 @@ namespace Xchain.net.xchain.thorchain
             throw new NotImplementedException();
         }
 
-        public Network GetNetwork()
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<Tx> GetTranasctionData(string txId, string assetAddress)
         {
             throw new NotImplementedException();
@@ -116,17 +126,7 @@ namespace Xchain.net.xchain.thorchain
             throw new NotImplementedException();
         }
 
-        public void SetClientUrl(ClientUrl clientUrl)
-        {
-            throw new NotImplementedException();
-        }
-
         public void SetExplorerUrl(ExplorerUrl explorerUrl)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetNetwork(Network network)
         {
             throw new NotImplementedException();
         }

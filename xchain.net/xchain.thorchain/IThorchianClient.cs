@@ -10,8 +10,7 @@ namespace Xchain.net.xchain.thorchain
 {
     public interface IThorchianClient
     {
-        void SetClientUrl(ClientUrl clientUrl);
-        NodeUrl GetClientUrl();
+        ClientUrl ClientUrl { get; set; }
         void SetExplorerUrl(ExplorerUrl explorerUrl);
         string GetExplorerNodeUrl(string node);
         CosmosSdkClient GetCosmosClient();
