@@ -14,7 +14,7 @@ using Xchain.net.xchain.thorchain.Models;
 
 namespace Xchain.net.xchain.thorchain
 {
-    public class ThorchainClient : IXchainClient , IThorchianClient
+    public class ThorchainClient : IXchainClient , IThorchianClient , IDisposable
     {
         private string _phrase;
         private ClientUrl _clientUrl;
@@ -49,16 +49,27 @@ namespace Xchain.net.xchain.thorchain
             }
         }
 
-        public Network Network { get => this._network; set => this._network = value; }
+        public Network Network
+        {
+            get => this._network;
+            set
+            {
+                this._network = value;
+                this.ThorClient = new CosmosSdkClient();
+                this.Address = string.Empty;
+            }
+        }
         public CosmosSdkClient ThorClient { get; set; }
-
-
-
+        public string Address { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public ExplorerUrl ExplorerUrl { get; set; }
 
         public ThorchainClient(string phrase , ClientUrl clientUrl , ExplorerUrl explorerUrl , Network network = Network.testnet)
         {
             this.Network = network;
             this.ClientUrl = clientUrl ?? Utils.GetDefaultClientUrl();
+            this.ExplorerUrl = explorerUrl ?? Utils.GetDefaultExplorerUrl();
+            this.ThorClient = new CosmosSdkClient();
+
             if (!string.IsNullOrEmpty(phrase))
             {
                 this.Phrase = phrase;
@@ -67,11 +78,6 @@ namespace Xchain.net.xchain.thorchain
 
 
         public Task<string> Deposit(DepositParam @params)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string GetAddress()
         {
             throw new NotImplementedException();
         }
@@ -101,11 +107,6 @@ namespace Xchain.net.xchain.thorchain
             throw new NotImplementedException();
         }
 
-        public string GetExplorerUrl()
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<Fees> GetFees(FeeParams @params = null)
         {
             throw new NotImplementedException();
@@ -123,12 +124,9 @@ namespace Xchain.net.xchain.thorchain
 
         public void PurgeClient()
         {
-            throw new NotImplementedException();
-        }
-
-        public void SetExplorerUrl(ExplorerUrl explorerUrl)
-        {
-            throw new NotImplementedException();
+            this.Phrase = string.Empty;
+            this.Address = string.Empty;
+            this.PrivateKey = null;
         }
 
         public Task<string> Transfer(TxParams @params)
@@ -139,6 +137,11 @@ namespace Xchain.net.xchain.thorchain
         public Task<bool> ValidateAddress(string address)
         {
             throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            this.PurgeClient();
         }
     }
 }

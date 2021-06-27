@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Xchain.net.xchain.client.Models;
+using Xchain.net.xchain.thorchain.Models;
 
 namespace Xchain.net.xchain.client
 {
@@ -13,13 +14,13 @@ namespace Xchain.net.xchain.client
         // Properties
         string Phrase { get; set; }
         Network Network { get; set; }
+        string Address { get; set; }
+        ExplorerUrl ExplorerUrl { get; set; }
         // Methods
-
-        string GetExplorerUrl();
         string GetExplorerAddressUrl(string address);
         string GetExplorerTxUrl(string txId);
         Task<bool> ValidateAddress(string address);
-        string GetAddress();
+        
         Task<Balance> GetBalance(string address = "", List<Asset> assets = null);
         Task<TxPage> GetTransactions();
         Task<Tx> GetTranasctionData(string txId, string assetAddress);
