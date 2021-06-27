@@ -126,7 +126,7 @@ namespace Xchain.net.xchain.thorchain
         {
             this.Phrase = string.Empty;
             this.Address = string.Empty;
-            this.PrivateKey = null;
+            //this.PrivateKey = null;
         }
 
         public Task<string> Transfer(TxParams @params)
