@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Xchain.net.xchain.cosmos.Models.Crypto.RIPEMD160;
 
 namespace Xchain.net.xchain.cosmos.Models.Crypto
 {
@@ -76,12 +77,27 @@ namespace Xchain.net.xchain.cosmos.Models.Crypto
 
         public string ToBase64()
         {
-            throw new NotImplementedException();
+            return Convert.ToBase64String(this.pubKey);
         }
 
         public byte[] ToBuffer()
         {
-            throw new NotImplementedException();
+            return this.pubKey;
+        }
+        
+        public string toJsonInCodec()
+        {
+            return this.ToBase64();
+        }
+
+        public IPublicKey fromBase64(string value)
+        {
+            return new PublicKeySecp256k1(Convert.FromBase64String(value));
+        }
+
+        public IPublicKey fromJSON(string value)
+        {
+            return fromBase64(value);
         }
 
         public bool Verify(byte[] signature, byte[] message)
@@ -105,7 +121,15 @@ namespace Xchain.net.xchain.cosmos.Models.Crypto
 
         public byte[] Hash160(byte[] buffer)
         {
-            return null; //TODO
+            byte[] sha256hash;
+            using (SHA256 sHA256 = SHA256.Create())
+            {
+                sha256hash = sHA256.ComputeHash(buffer);
+            }
+            var ripemd160 = RIPEMD160Crypto.Create();
+
+            var ripemd160hash = ripemd160.ComputeHash(sha256hash);
+            return ripemd160hash;
         }
     }
 }
