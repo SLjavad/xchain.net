@@ -45,7 +45,7 @@ namespace Xchain.net.xchain.thorchain
             set
             {
                 this._clientUrl = value;
-                this.ThorClient = new CosmosSdkClient(); //TODO: must be complete with true arguments
+                this.ThorClient = new CosmosSdkClient(value.GetByNetwork(this.Network).Node , "thorchain" , ThorchainUtils.GetPrefix(this.Network) , ConstantValues.DerivePath);
             }
         }
 
@@ -55,7 +55,7 @@ namespace Xchain.net.xchain.thorchain
             set
             {
                 this._network = value;
-                this.ThorClient = new CosmosSdkClient();
+                this.ThorClient = new CosmosSdkClient(this.ClientUrl.GetByNetwork(this.Network).Node, "thorchain", ThorchainUtils.GetPrefix(this.Network), ConstantValues.DerivePath);
                 this.Address = string.Empty;
             }
         }
@@ -65,10 +65,10 @@ namespace Xchain.net.xchain.thorchain
 
         public ThorchainClient(string phrase , ClientUrl clientUrl , ExplorerUrl explorerUrl , Network network = Network.testnet)
         {
-            this.Network = network;
-            this.ClientUrl = clientUrl ?? Utils.GetDefaultClientUrl();
-            this.ExplorerUrl = explorerUrl ?? Utils.GetDefaultExplorerUrl();
-            this.ThorClient = new CosmosSdkClient();
+            this._network = network;
+            this.ClientUrl = clientUrl ?? ThorchainUtils.GetDefaultClientUrl();
+            this.ExplorerUrl = explorerUrl ?? ThorchainUtils.GetDefaultExplorerUrl();
+            this.ThorClient = new CosmosSdkClient(this.ClientUrl.GetByNetwork(this.Network).Node, "thorchain", ThorchainUtils.GetPrefix(this.Network), ConstantValues.DerivePath);
 
             if (!string.IsNullOrEmpty(phrase))
             {

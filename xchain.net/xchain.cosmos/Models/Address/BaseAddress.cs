@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xchain.net.xchain.cosmos.Models.Address.Prefix;
+using Xchain.net.xchain.cosmos.Models.Crypto;
 
 namespace Xchain.net.xchain.cosmos.Models.Address
 {
     public class BaseAddress
     {
-        private readonly byte[] value;
+        protected readonly byte[] value;
 
         public BaseAddress(byte[] value)
         {
@@ -18,6 +20,21 @@ namespace Xchain.net.xchain.cosmos.Models.Address
                 throw new Exception("Address must be 20 bytes length.");
             }
             this.value = value;
+        }
+
+        public static BaseAddress FromPublicKey(PublicKeySecp256k1 publicKey)
+        {
+            return new BaseAddress(publicKey.GetAddress());
+        }
+
+        public static void SetBech32Prefix(string accAddr , string accPub , string valAddr , string valPub , string consAddr , string consPub)
+        {
+            Bech32Prefix.AccAddr = accAddr;
+            Bech32Prefix.AccPub = accPub;
+            Bech32Prefix.ValAddr = valAddr;
+            Bech32Prefix.ValPub = valPub;
+            Bech32Prefix.ConsAddr = consAddr;
+            Bech32Prefix.ConsPub = consPub;
         }
     }
 }

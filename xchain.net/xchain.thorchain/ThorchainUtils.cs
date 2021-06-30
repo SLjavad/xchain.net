@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xchain.net.xchain.client.Models;
 using Xchain.net.xchain.thorchain.Models;
 
 namespace xchain.net.xchain.thorchain
 {
-    public class Utils
+    public class ThorchainUtils
     {
         public static ClientUrl GetDefaultClientUrl()
         {
@@ -26,5 +27,12 @@ namespace xchain.net.xchain.thorchain
                 Mainnet = "https://thorchain.net/#"
             };
         }
+
+        public static string GetPrefix(Network network) => network switch
+        {
+            Network.mainnet => "thor",
+            Network.testnet => "tthor",
+            _ => throw new Exception("Invalid Network"),
+        };
     }
 }
