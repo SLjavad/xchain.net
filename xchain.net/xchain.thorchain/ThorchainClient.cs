@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using xchain.net.xchain.thorchain;
 using Xchain.net.xchain.client;
 using Xchain.net.xchain.client.Models;
+using Xchain.net.xchain.cosmos.Models.Crypto;
 using Xchain.net.xchain.cosmos.SDK;
 using Xchain.net.xchain.crypto;
 using Xchain.net.xchain.thorchain.Constants;
@@ -17,6 +18,7 @@ namespace Xchain.net.xchain.thorchain
     public class ThorchainClient : IXchainClient , IThorchianClient , IDisposable
     {
         private string _phrase;
+        private string _address;
         private ClientUrl _clientUrl;
         private Network _network;
 
@@ -32,6 +34,8 @@ namespace Xchain.net.xchain.thorchain
                         throw new PhraseNotValidException(value , "Invalid Phrase");
                     }
                     this._phrase = value;
+                    this.PrivateKey = null;
+                    this.Address = string.Empty;
                 }
             }
         }
@@ -60,8 +64,24 @@ namespace Xchain.net.xchain.thorchain
             }
         }
         public CosmosSdkClient ThorClient { get; set; }
-        public string Address { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string Address
+        {
+            get => this._address;
+            set
+            {
+                if (string.IsNullOrEmpty(this._address))
+                {
+                    var address = this.ThorClient.GetAddressFromPrivKey(this.PrivateKey);
+                    if (string.IsNullOrEmpty(address))
+                    {
+                        throw new Exception("Address not defined");
+                    }
+                    this._address = address;
+                }
+            }
+        }
         public ExplorerUrl ExplorerUrl { get; set; }
+        public IPrivateKey PrivateKey { get; set; } //TODO: IMPL
 
         public ThorchainClient(string phrase , ClientUrl clientUrl , ExplorerUrl explorerUrl , Network network = Network.testnet)
         {

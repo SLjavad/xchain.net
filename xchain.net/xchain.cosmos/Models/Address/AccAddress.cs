@@ -37,7 +37,7 @@ namespace Xchain.net.xchain.cosmos.Models.Address
             return new AccAddress(data);
         }
 
-        public static new AccAddress FromPublicKey(PublicKeySecp256k1 publicKey)
+        public static new AccAddress FromPublicKey(IPublicKey publicKey)
         {
             return new AccAddress(publicKey.GetAddress());
         }

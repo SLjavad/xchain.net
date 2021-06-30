@@ -22,7 +22,7 @@ namespace Xchain.net.xchain.cosmos.Models.Address
             this.value = value;
         }
 
-        public static BaseAddress FromPublicKey(PublicKeySecp256k1 publicKey)
+        public static BaseAddress FromPublicKey(IPublicKey publicKey)
         {
             return new BaseAddress(publicKey.GetAddress());
         }

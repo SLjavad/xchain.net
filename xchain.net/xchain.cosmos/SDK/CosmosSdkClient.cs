@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xchain.net.xchain.cosmos.Models.Address;
+using Xchain.net.xchain.cosmos.Models.Crypto;
 
 namespace Xchain.net.xchain.cosmos.SDK
 {
@@ -21,6 +23,23 @@ namespace Xchain.net.xchain.cosmos.SDK
             this.chainId = chainId;
             this.prefix = prefix;
             this.derivePath = derivePath;
+        }
+
+        public void SetPrefix()
+        {
+            BaseAddress.SetBech32Prefix(
+                this.prefix,
+                this.prefix + "pub",
+                this.prefix + "valoper",
+                this.prefix + "valoperpub",
+                this.prefix + "valcons",
+                this.prefix + "valconspub");
+        }
+
+        public string GetAddressFromPrivKey(IPrivateKey privateKey)
+        {
+            this.SetPrefix();
+            return AccAddress.FromPublicKey(privateKey.GetPublicKey()).ToBech32();
         }
     }
 }
