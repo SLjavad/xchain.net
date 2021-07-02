@@ -19,7 +19,7 @@ namespace Xchain.net.xchain.client
         // Methods
         string GetExplorerAddressUrl(string address);
         string GetExplorerTxUrl(string txId);
-        Task<bool> ValidateAddress(string address);
+        bool ValidateAddress(string address);
         
         Task<Balance> GetBalance(string address = "", List<Asset> assets = null);
         Task<TxPage> GetTransactions();

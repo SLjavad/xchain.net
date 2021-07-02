@@ -12,7 +12,6 @@ namespace Xchain.net.xchain.thorchain
     {
         ClientUrl ClientUrl { get; set; }
         string GetExplorerNodeUrl(string node);
-        CosmosSdkClient GetCosmosClient();
         Task<string> Deposit(DepositParam @params);
 
     }

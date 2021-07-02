@@ -52,5 +52,25 @@ namespace Xchain.net.xchain.cosmos.SDK
             key = key.Derive(new KeyPath(this.derivePath));
             return new PrivateKeySecp256k1(key.PrivateKey.ToBytes());
         }
+
+        public bool CheckAddress(string address)
+        {
+            try
+            {
+                this.SetPrefix();
+
+                if (!address.StartsWith(this.prefix))
+                {
+                    return false;
+                }
+                return AccAddress.FromBech32(address).ToBech32() == address;
+
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+        }
     }
 }

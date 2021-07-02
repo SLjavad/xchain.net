@@ -122,24 +122,22 @@ namespace Xchain.net.xchain.thorchain
             throw new NotImplementedException();
         }
 
-        public CosmosSdkClient GetCosmosClient()
-        {
-            throw new NotImplementedException();
-        }
-
         public string GetExplorerAddressUrl(string address)
         {
-            throw new NotImplementedException();
+            var explorerAddress = $@"{this.ExplorerUrl.GetExplorerUrlByNetwork(this.Network)}/address/{address}";
+            return explorerAddress;
         }
 
         public string GetExplorerNodeUrl(string node)
         {
-            throw new NotImplementedException();
+            var explorerNodeUr = $@"{this.ExplorerUrl.GetExplorerUrlByNetwork(this.Network)}/nodes/{node}";
+            return explorerNodeUr;
         }
 
         public string GetExplorerTxUrl(string txId)
         {
-            throw new NotImplementedException();
+            var txUrl = $@"{this.ExplorerUrl.GetExplorerUrlByNetwork(this.Network)}/txs/{txId}";
+            return txUrl;
         }
 
         public Task<Fees> GetFees(FeeParams @params = null)
@@ -169,9 +167,9 @@ namespace Xchain.net.xchain.thorchain
             throw new NotImplementedException();
         }
 
-        public Task<bool> ValidateAddress(string address)
+        public bool ValidateAddress(string address)
         {
-            throw new NotImplementedException();
+            return this.ThorClient.CheckAddress(address);
         }
 
         public void Dispose()

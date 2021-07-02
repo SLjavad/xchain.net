@@ -25,10 +25,8 @@ namespace Xchain.net.xchain.cosmos.Models.Address
 
         public static AccAddress FromBech32(string accAddress)
         {
-            string hrp;
-            byte[] data;
 
-            Bech32Engine.Decode(accAddress, out hrp, out data);
+            Bech32Engine.Decode(accAddress, out string hrp, out byte[] data);
             if (data == null)
             {
                 throw new Exception("fromBech32 Decode Error");
