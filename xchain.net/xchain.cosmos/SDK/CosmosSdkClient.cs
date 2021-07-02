@@ -1,10 +1,13 @@
-﻿using System;
+﻿using dotnetstandard_bip39;
+using NBitcoin;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xchain.net.xchain.cosmos.Models.Address;
 using Xchain.net.xchain.cosmos.Models.Crypto;
+using Xchain.net.xchain.crypto;
 
 namespace Xchain.net.xchain.cosmos.SDK
 {
@@ -40,6 +43,14 @@ namespace Xchain.net.xchain.cosmos.SDK
         {
             this.SetPrefix();
             return AccAddress.FromPublicKey(privateKey.GetPublicKey()).ToBech32();
+        }
+
+        public IPrivateKey GetPrivKeyFromMnemonic(string mnemonic)
+        {
+            Mnemonic mnemonic1 = new(mnemonic);
+            var key = mnemonic1.DeriveExtKey();
+            key = key.Derive(new KeyPath(this.derivePath));
+            return new PrivateKeySecp256k1(key.PrivateKey.ToBytes());
         }
     }
 }

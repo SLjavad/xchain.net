@@ -21,6 +21,7 @@ namespace Xchain.net.xchain.thorchain
         private string _address;
         private ClientUrl _clientUrl;
         private Network _network;
+        private IPrivateKey _privateKey = null;
 
         public string Phrase 
         {
@@ -81,7 +82,21 @@ namespace Xchain.net.xchain.thorchain
             }
         }
         public ExplorerUrl ExplorerUrl { get; set; }
-        public IPrivateKey PrivateKey { get; set; } //TODO: IMPL
+        public IPrivateKey PrivateKey
+        {
+            get => this._privateKey;
+            set
+            {
+                if (this._privateKey == null)
+                {
+                    if (string.IsNullOrEmpty(this._phrase))
+                    {
+                        throw new Exception("phrase not set");
+                    }
+                    this._privateKey = this.ThorClient.GetPrivKeyFromMnemonic(this._phrase);
+                }
+            }
+        }
 
         public ThorchainClient(string phrase , ClientUrl clientUrl , ExplorerUrl explorerUrl , Network network = Network.testnet)
         {

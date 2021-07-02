@@ -1,4 +1,5 @@
 ﻿using dotnetstandard_bip39;
+using NBitcoin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,16 @@ namespace Xchain.net.xchain.crypto
     {
         public static bool ValidatePhrase(string phrase)
         {
-            BIP39 bip39 = new BIP39();
+            BIP39 bip39 = new();
 
             return bip39.ValidateMnemonic(phrase, BIP39Wordlist.English);
+        }
+
+        public static byte[] GetSeed(string phrase)
+        {
+            Mnemonic mnemonic = new(phrase);
+            var res = mnemonic.DeriveSeed();
+            return res;
         }
     }
 }
