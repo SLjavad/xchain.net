@@ -117,9 +117,10 @@ namespace Xchain.net.xchain.thorchain
             throw new NotImplementedException();
         }
 
-        public Task<Balance> GetBalance(string address = "", List<Asset> assets = null)
+        public Task<Balance> GetBalance(string address = null, List<Asset> assets = null)
         {
-            throw new NotImplementedException();
+            var balances = this.ThorClient.GetBalance(address ?? this.Address);
+            //TODO: WIP
         }
 
         public string GetExplorerAddressUrl(string address)

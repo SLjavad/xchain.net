@@ -3,8 +3,11 @@ using NBitcoin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
+using Xchain.net.xchain.client;
+using Xchain.net.xchain.cosmos.Models;
 using Xchain.net.xchain.cosmos.Models.Address;
 using Xchain.net.xchain.cosmos.Models.Crypto;
 using Xchain.net.xchain.crypto;
@@ -71,6 +74,28 @@ namespace Xchain.net.xchain.cosmos.SDK
                 return false;
             }
 
+        }
+
+        public async Task<List<Models.Coin>> GetBalance(string address)
+        {
+            try
+            {
+                this.SetPrefix();
+                var apiUrl = $@"{this.server}/bank/balances/{address}";
+
+                var response = await GlobalHttpClient.HttpClient.GetAsync(apiUrl);
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadFromJsonAsync<List<Models.Coin>>();
+                    return result;
+                }
+                return null;
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xchain.net.xchain.client;
 using Xchain.net.xchain.client.Models;
 using Xchain.net.xchain.thorchain.Models;
 
@@ -34,5 +35,26 @@ namespace xchain.net.xchain.thorchain
             Network.testnet => "tthor",
             _ => throw new Exception("Invalid Network"),
         };
+
+        public static Asset GetAsset(string denom)
+        {
+            if (denom == GetDenom(new AssetRune()))
+            {
+                return new AssetRune();
+            }
+            return Utils.AssetFromString($"THOR.{denom.ToUpperInvariant()}");
+        }
+
+        public static string GetDenom(Asset asset)
+        {
+            if (Utils.AssetToString(asset) == Utils.AssetToString(new AssetRune()))
+            {
+                return "rune";
+            }
+            else
+            {
+                return asset.Symbol;
+            }
+        }
     }
 }

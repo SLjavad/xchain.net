@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Xchain.net.xchain.client.Models
 {
-    public class Asset
+    public record Asset
     {
         [JsonPropertyName("chain")]
         public virtual Chain Chain { get; set; }

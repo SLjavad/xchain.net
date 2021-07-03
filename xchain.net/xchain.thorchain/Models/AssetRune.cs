@@ -7,7 +7,7 @@ using Xchain.net.xchain.client.Models;
 
 namespace Xchain.net.xchain.thorchain.Models
 {
-    public class AssetRune : Asset
+    public record AssetRune : Asset
     {
         public override Chain Chain { get => Chain.THOR;}
         public override string Symbol { get => "RUNE"; }
