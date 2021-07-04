@@ -157,9 +157,9 @@ namespace Xchain.net.xchain.thorchain
             throw new NotImplementedException();
         }
 
-        public Task<Tx> GetTranasctionData(string txId, string assetAddress)
+        public async Task<Tx> GetTranasctionData(string txId, string assetAddress = null)
         {
-            throw new NotImplementedException();
+            var txResult = await this.ThorClient.TxHashGet(txId);
         }
 
         public Task<TxPage> GetTransactions()

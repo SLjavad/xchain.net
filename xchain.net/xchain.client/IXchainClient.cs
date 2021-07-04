@@ -23,7 +23,7 @@ namespace Xchain.net.xchain.client
         
         Task<List<Balance>> GetBalance(string address = "", List<Asset> assets = null);
         Task<TxPage> GetTransactions();
-        Task<Tx> GetTranasctionData(string txId, string assetAddress);
+        Task<Tx> GetTranasctionData(string txId, string assetAddress = null);
         Task<Fees> GetFees(FeeParams @params = null);
         Task<string> Transfer(TxParams @params);
         void PurgeClient();

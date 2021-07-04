@@ -10,6 +10,7 @@ using Xchain.net.xchain.client;
 using Xchain.net.xchain.cosmos.Models;
 using Xchain.net.xchain.cosmos.Models.Address;
 using Xchain.net.xchain.cosmos.Models.Crypto;
+using Xchain.net.xchain.cosmos.Models.Tx;
 using Xchain.net.xchain.crypto;
 
 namespace Xchain.net.xchain.cosmos.SDK
@@ -95,6 +96,29 @@ namespace Xchain.net.xchain.cosmos.SDK
             catch (Exception ex)
             {
                 return null;
+            }
+        }
+
+        public async Task<TxResponse> TxHashGet(string hash)
+        {
+            try
+            {
+                this.SetPrefix();
+
+                var apiUrl = $@"{this.server}/txs/{hash}";
+
+                var response = await GlobalHttpClient.HttpClient.GetAsync(apiUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadFromJsonAsync<TxResponse>();
+                    return result;
+                }
+                throw new Exception("Transaction not found");
+            }
+            catch (Exception)
+            {
+                throw new Exception("Transaction not found");
             }
         }
     }
