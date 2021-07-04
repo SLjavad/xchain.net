@@ -21,7 +21,7 @@ namespace Xchain.net.xchain.client
         string GetExplorerTxUrl(string txId);
         bool ValidateAddress(string address);
         
-        Task<Balance> GetBalance(string address = "", List<Asset> assets = null);
+        Task<List<Balance>> GetBalance(string address = "", List<Asset> assets = null);
         Task<TxPage> GetTransactions();
         Task<Tx> GetTranasctionData(string txId, string assetAddress);
         Task<Fees> GetFees(FeeParams @params = null);

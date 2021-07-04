@@ -117,10 +117,21 @@ namespace Xchain.net.xchain.thorchain
             throw new NotImplementedException();
         }
 
-        public Task<Balance> GetBalance(string address = null, List<Asset> assets = null)
+        public async Task<List<Balance>> GetBalance(string address = null, List<Asset> assets = null)
         {
-            var balances = this.ThorClient.GetBalance(address ?? this.Address);
-            //TODO: WIP
+            var rawBalances = await this.ThorClient.GetBalance(address ?? this.Address);
+            var balances = rawBalances.Select(x => new Balance
+            {
+               Amount = x.Amount,
+               Asset = string.IsNullOrEmpty(x.Denom) ? ThorchainUtils.GetAsset(x.Denom) : new AssetRune()
+            }).ToList();
+
+            if (assets != null && assets.Count > 0)
+            {
+                balances = balances.Where(x => assets.Any(y => Utils.AssetToString(y) == Utils.AssetToString(x.Asset))).ToList();
+            }
+
+            return balances;
         }
 
         public string GetExplorerAddressUrl(string address)
