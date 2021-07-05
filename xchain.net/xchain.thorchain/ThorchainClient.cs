@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 using xchain.net.xchain.thorchain;
@@ -50,7 +51,7 @@ namespace Xchain.net.xchain.thorchain
             set
             {
                 this._clientUrl = value;
-                this.ThorClient = new CosmosSdkClient(value.GetByNetwork(this.Network).Node , "thorchain" , ThorchainUtils.GetPrefix(this.Network) , ConstantValues.DerivePath);
+                this.ThorClient = new CosmosSdkClient(value.GetByNetwork(this.Network).Node , "thorchain" , ThorchainUtils.GetPrefix(this.Network) , ThorchainConstantValues.DerivePath);
             }
         }
 
@@ -60,7 +61,7 @@ namespace Xchain.net.xchain.thorchain
             set
             {
                 this._network = value;
-                this.ThorClient = new CosmosSdkClient(this.ClientUrl.GetByNetwork(this.Network).Node, "thorchain", ThorchainUtils.GetPrefix(this.Network), ConstantValues.DerivePath);
+                this.ThorClient = new CosmosSdkClient(this.ClientUrl.GetByNetwork(this.Network).Node, "thorchain", ThorchainUtils.GetPrefix(this.Network), ThorchainConstantValues.DerivePath);
                 this.Address = string.Empty;
             }
         }
@@ -103,7 +104,7 @@ namespace Xchain.net.xchain.thorchain
             this._network = network;
             this.ClientUrl = clientUrl ?? ThorchainUtils.GetDefaultClientUrl();
             this.ExplorerUrl = explorerUrl ?? ThorchainUtils.GetDefaultExplorerUrl();
-            this.ThorClient = new CosmosSdkClient(this.ClientUrl.GetByNetwork(this.Network).Node, "thorchain", ThorchainUtils.GetPrefix(this.Network), ConstantValues.DerivePath);
+            this.ThorClient = new CosmosSdkClient(this.ClientUrl.GetByNetwork(this.Network).Node, "thorchain", ThorchainUtils.GetPrefix(this.Network), ThorchainConstantValues.DerivePath);
 
             if (!string.IsNullOrEmpty(phrase))
             {
@@ -159,7 +160,89 @@ namespace Xchain.net.xchain.thorchain
 
         public async Task<Tx> GetTranasctionData(string txId, string assetAddress = null)
         {
-            var txResult = await this.ThorClient.TxHashGet(txId);
+            try
+            {
+                var txResult = await this.ThorClient.TxHashGet(txId);
+                var action = ThorchainUtils.GetTxType(txResult.Data, "hex");
+
+                List<Tx> txs = new List<Tx>();
+
+                if (action == ThorchainConstantValues.MSG_DEPOSIT)
+                {
+                    var depositTx = await GetDepositTransaction(txId);
+                    depositTx.Date = DateTime.Parse(txResult.TimeStamp);
+                    txs.Add(depositTx);
+                }
+                else
+                {
+                    //TODO: WIP
+                }
+
+                if (txs.Count == 0)
+                {
+                    throw new Exception("transaction not found");
+                }
+                return txs[0];
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+        }
+
+        public async Task<Tx> GetDepositTransaction(string txId)
+        {
+            try
+            {
+                var apiUrl = $"{this.ClientUrl.GetByNetwork(this.Network).Node}/thorchain/tx/{txId}";
+                var response = await GlobalHttpClient.HttpClient.GetAsync(apiUrl);
+                TxResult txResult;
+                if (response.IsSuccessStatusCode)
+                {
+                    txResult = await response.Content.ReadFromJsonAsync<TxResult>();
+                }
+                else
+                {
+                    return null;
+                }
+                if (txResult == null || txResult.ObservedTx == null)
+                {
+                    throw new Exception("transaction not found");
+                }
+
+                Asset asset = null;
+                List<TxFrom> from = new List<TxFrom>();
+                List<TxTo> to = new List<TxTo>();
+
+                txResult.ObservedTx.Tx.Coins.ForEach(coin =>
+                {
+                    from.Add(new TxFrom
+                    {
+                        Amount = decimal.Parse(coin.Amount),
+                        From = txResult.ObservedTx.Tx.FromAddress
+                    });
+                    to.Add(new TxTo
+                    {
+                        Amount = decimal.Parse(coin.Amount),
+                        To = txResult.ObservedTx.Tx.ToAddress
+                    });
+                    asset = Utils.AssetFromString(coin.Asset);
+                });
+
+                return new Tx
+                {
+                    Asset = asset ?? new AssetRune(),
+                    From = from,
+                    Hash = txId,
+                    To = to,
+                    type = TxType.transfer
+                };
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public Task<TxPage> GetTransactions()

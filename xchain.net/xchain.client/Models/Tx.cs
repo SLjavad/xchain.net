@@ -30,7 +30,7 @@ namespace Xchain.net.xchain.client.Models
         public List<TxFrom> From { get; set; }
         public List<TxTo> To { get; set; }
         public DateTime Date { get; set; }
-        public TxType Type { get; set; }
+        public TxType type { get; set; }
         public string Hash { get; set; }
     }
 }

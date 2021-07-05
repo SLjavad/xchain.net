@@ -56,5 +56,35 @@ namespace xchain.net.xchain.thorchain
                 return asset.Symbol;
             }
         }
+
+        private static byte[] StringToByteArray(string hex)
+        {
+            int NumberChars = hex.Length;
+            byte[] bytes = new byte[NumberChars / 2];
+            for (int i = 0; i < NumberChars; i += 2)
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            return bytes;
+        }
+
+        public static string GetTxType(string txData , string encoding)
+        {
+            switch (encoding)
+            {
+                case "base64":
+                    {
+                        var res = Encoding.UTF8.GetString(Convert.FromBase64String(txData));
+                        res = res[4..];
+                        return res;
+                    }
+                case "hex":
+                    {
+                        var res = Encoding.UTF8.GetString(StringToByteArray(txData));
+                        res = res[4..];
+                        return res;
+                    }
+                default:
+                    return null;
+            }
+        }
     }
 }
