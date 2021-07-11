@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xchain.net.xchain.client;
 using Xchain.net.xchain.client.Models;
+using Xchain.net.xchain.cosmos.Models.Tx;
 using Xchain.net.xchain.thorchain.Models;
 
 namespace xchain.net.xchain.thorchain
@@ -85,6 +86,11 @@ namespace xchain.net.xchain.thorchain
                 default:
                     return null;
             }
+        }
+
+        public static List<Tx> GetTxFromHistory(List<TxResponse> txs , Network network)
+        {
+
         }
     }
 }
