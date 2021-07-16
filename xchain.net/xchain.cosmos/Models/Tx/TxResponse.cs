@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Xchain.net.xchain.cosmos.Models.Message.Base;
 
 namespace Xchain.net.xchain.cosmos.Models.Tx
 {
@@ -28,5 +29,16 @@ namespace Xchain.net.xchain.cosmos.Models.Tx
         public object Tx { get; set; }
         [JsonPropertyName("timestamp")]
         public string TimeStamp { get; set; }
+    }
+
+    public class Body
+    {
+        [JsonPropertyName("messages")]
+        public List<IMsg> Messages { get; set; }
+    }
+    public class RawTxResponse
+    {
+        [JsonPropertyName("body")]
+        public Body Body { get; set; }
     }
 }
