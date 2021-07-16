@@ -31,7 +31,7 @@ namespace Xchain.net.xchain.thorchain
             {
                 if (this._phrase != value)
                 {
-                    if (XcahinCrypto.ValidatePhrase(value))
+                    if (!XcahinCrypto.ValidatePhrase(value))
                     {
                         throw new PhraseNotValidException(value , "Invalid Phrase");
                     }
@@ -175,7 +175,12 @@ namespace Xchain.net.xchain.thorchain
                 }
                 else
                 {
-                    //TODO: WIP
+                    var result = ThorchainUtils.GetTxFromHistory(new List<cosmos.Models.Tx.TxResponse>
+                    {
+                        txResult
+                    }, this.Network);
+
+                    txs.AddRange(result);
                 }
 
                 if (txs.Count == 0)
@@ -239,7 +244,7 @@ namespace Xchain.net.xchain.thorchain
                     type = TxType.transfer
                 };
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }

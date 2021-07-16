@@ -44,12 +44,12 @@ namespace Xchain.net.xchain.thorchain.Models
 
     public class ObservedTx
     {
-        [JsonPropertyName("observer_tx")]
+        [JsonPropertyName("tx")]
         public ObservedTx_Tx Tx { get; set; }
         [JsonPropertyName("status")]
         public string Status { get; set; }
         [JsonPropertyName("signers")]
-        public string Signers { get; set; }
+        public List<string> Signers { get; set; }
     }
 
     public class KeysignMetric
