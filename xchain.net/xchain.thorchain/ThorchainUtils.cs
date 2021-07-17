@@ -10,6 +10,7 @@ using Xchain.net.xchain.cosmos.Models.Address;
 using Xchain.net.xchain.cosmos.Models.Message;
 using Xchain.net.xchain.cosmos.Models.Message.Base;
 using Xchain.net.xchain.cosmos.Models.Tx;
+using Xchain.net.xchain.thorchain.Constants;
 using Xchain.net.xchain.thorchain.Models;
 
 namespace xchain.net.xchain.thorchain
@@ -241,6 +242,19 @@ namespace xchain.net.xchain.thorchain
                    return acc;
                });
             return result;
+        }
+
+        public static Fees GetDefaultFees()
+        {
+            var fee = ThorchainConstantValues.DEFAULT_GAS_VALUE;
+
+            return new Fees
+            {
+                Type = FeeType.@base,
+                Average = fee,
+                Fast = fee,
+                Fastest = fee
+            };
         }
     }
 }

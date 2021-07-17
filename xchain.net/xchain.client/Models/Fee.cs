@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Xchain.net.xchain.client.Models
@@ -15,13 +16,19 @@ namespace Xchain.net.xchain.client.Models
 
     public enum FeeType
     {
-        @byte = 1,
-        @base = 2
+        @byte,
+        @base
     }
 
     public class Fees
     {
-        public Dictionary<FeeOptionKey , decimal> FeeOption { get; set; }
+        [JsonPropertyName("fast")]
+        public decimal Fast { get; set; }
+        [JsonPropertyName("fastest")]
+        public decimal Fastest { get; set; }
+        [JsonPropertyName("average")]
+        public decimal Average { get; set; }
+        [JsonPropertyName("type")]
         public FeeType Type { get; set; }
     }
 

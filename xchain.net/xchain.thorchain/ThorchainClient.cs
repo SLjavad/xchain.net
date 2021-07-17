@@ -153,9 +153,9 @@ namespace Xchain.net.xchain.thorchain
             return txUrl;
         }
 
-        public Task<Fees> GetFees(FeeParams @params = null)
+        public async Task<Fees> GetFees(FeeParams @params = null)
         {
-            throw new NotImplementedException();
+            return await Task.FromResult(ThorchainUtils.GetDefaultFees());
         }
 
         public async Task<Tx> GetTranasctionData(string txId, string assetAddress = null)

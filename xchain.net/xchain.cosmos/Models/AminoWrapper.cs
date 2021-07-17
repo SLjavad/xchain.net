@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Xchain.net.xchain.cosmos.Models.Message.Base;
 
 namespace Xchain.net.xchain.cosmos.Models
 {
-    public class AminoWrapper
+    public class AminoWrapper : IMsg
     {
         public AminoWrapper(string type, object value)
         {

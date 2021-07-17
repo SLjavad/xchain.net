@@ -32,7 +32,7 @@ namespace Xchain.net.Test
         {
             string mnemonic = "rural bright ball negative already grass good grant nation screen model pizza";
             var thorClient = new ThorchainClient(mnemonic, null, null, xchain.client.Models.Network.testnet);
-            var res = thorClient.GetTranasctionData("77B7A218799CB8E261B6B2D8777D08C127A05C69FFF54C1E5FCDC86436155FE4");
+            var res = thorClient.GetTranasctionData("9D2B0AB362A5BF8689F0A984AB9B76129B83917D13638203FC7B03D6D97971BC");
         }
 
         static void Main(string[] args)
