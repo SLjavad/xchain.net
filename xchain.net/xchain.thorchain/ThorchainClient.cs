@@ -250,9 +250,9 @@ namespace Xchain.net.xchain.thorchain
             }
         }
 
-        public Task<TxPage> GetTransactions()
+        public async Task<TxPage> GetTransactions(TxHistoryParams txHistoryParams = null)
         {
-            throw new NotImplementedException();
+            var args = txHistoryParams as TxHistoryParamFilter;
         }
 
         public void PurgeClient()

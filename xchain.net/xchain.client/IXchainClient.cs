@@ -22,7 +22,7 @@ namespace Xchain.net.xchain.client
         bool ValidateAddress(string address);
         
         Task<List<Balance>> GetBalance(string address = "", List<Asset> assets = null);
-        Task<TxPage> GetTransactions();
+        Task<TxPage> GetTransactions(TxHistoryParams txHistoryParams = null);
         Task<Tx> GetTranasctionData(string txId, string assetAddress = null);
         Task<Fees> GetFees(FeeParams @params = null);
         Task<string> Transfer(TxParams @params);
