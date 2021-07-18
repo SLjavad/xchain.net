@@ -10,6 +10,7 @@ using Xchain.net.xchain.client;
 using Xchain.net.xchain.cosmos.Models;
 using Xchain.net.xchain.cosmos.Models.Address;
 using Xchain.net.xchain.cosmos.Models.Crypto;
+using Xchain.net.xchain.cosmos.Models.RPC;
 using Xchain.net.xchain.cosmos.Models.Tx;
 using Xchain.net.xchain.crypto;
 
@@ -119,6 +120,59 @@ namespace Xchain.net.xchain.cosmos.SDK
             catch (Exception)
             {
                 throw new Exception("Transaction not found");
+            }
+        }
+
+        public async Task<RPCTxSearchResult> SearchTxFromRPC(SearchTxParams searchTxParams)
+        {
+            try
+            {
+                var queryParameters = new List<string>();
+                if (!string.IsNullOrEmpty(searchTxParams.MessageAction))
+                {
+                    queryParameters.Add($"message.action={searchTxParams.MessageAction}");
+                }
+                if (!string.IsNullOrEmpty(searchTxParams.MessageSender))
+                {
+                    queryParameters.Add($"message.sender={searchTxParams.MessageSender}");
+                }
+                if (!string.IsNullOrEmpty(searchTxParams.TransferSender))
+                {
+                    queryParameters.Add($"transfer.sender={searchTxParams.TransferSender}");
+                }
+                if (!string.IsNullOrEmpty(searchTxParams.TransferRecipient))
+                {
+                    queryParameters.Add($"transfer.recipient={searchTxParams.TransferRecipient}");
+                }
+                if (searchTxParams.TxMinHeight.HasValue)
+                {
+                    queryParameters.Add($"tx.height>={searchTxParams.TxMinHeight}");
+                }
+                if (searchTxParams.TxMaxHeight.HasValue)
+                {
+                    queryParameters.Add($"tx.height<={searchTxParams.TxMaxHeight}");
+                }
+
+                var searchParameter = new List<string>();
+                searchParameter.Add($"query={string.Join(" AMD ", queryParameters)}");
+
+                if (searchTxParams.Page.HasValue)
+                {
+                    searchParameter.Add($"page={searchTxParams.Page}");
+                }
+                if (searchTxParams.Limit.HasValue)
+                {
+                    searchParameter.Add($"per_page={searchTxParams.Limit}");
+                }
+
+                searchParameter.Add("order_by=\"desc\"");
+
+                RPCResponse<RPCTxSearchResult> response; //TODO
+                
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
     }

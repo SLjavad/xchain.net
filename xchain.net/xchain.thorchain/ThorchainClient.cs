@@ -253,6 +253,22 @@ namespace Xchain.net.xchain.thorchain
         public async Task<TxPage> GetTransactions(TxHistoryParams txHistoryParams = null)
         {
             var args = txHistoryParams as TxHistoryParamFilter;
+
+            string messageAction = null;
+            var address = args?.Address ?? this.Address;
+            var offset = args?.Offset ?? 0;
+            var limit = args?.Limit ?? 10;
+            string txMinHeight = null;
+            string txMaxHeight = null;
+
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public void PurgeClient()
