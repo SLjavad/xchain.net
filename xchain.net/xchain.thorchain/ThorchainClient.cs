@@ -8,6 +8,8 @@ using xchain.net.xchain.thorchain;
 using Xchain.net.xchain.client;
 using Xchain.net.xchain.client.Models;
 using Xchain.net.xchain.cosmos.Models.Crypto;
+using Xchain.net.xchain.cosmos.Models.RPC;
+using Xchain.net.xchain.cosmos.Models.Tx;
 using Xchain.net.xchain.cosmos.SDK;
 using Xchain.net.xchain.crypto;
 using Xchain.net.xchain.thorchain.Constants;
@@ -241,7 +243,7 @@ namespace Xchain.net.xchain.thorchain
                     From = from,
                     Hash = txId,
                     To = to,
-                    type = TxType.transfer
+                    Type = TxType.transfer
                 };
             }
             catch (Exception ex)
@@ -258,12 +260,89 @@ namespace Xchain.net.xchain.thorchain
             var address = args?.Address ?? this.Address;
             var offset = args?.Offset ?? 0;
             var limit = args?.Limit ?? 10;
-            string txMinHeight = null;
-            string txMaxHeight = null;
+            int? txMinHeight = null;
+            int? txMaxHeight = null;
 
             try
             {
+                //TODO: registerCodecs(this.network)
 
+                var txIncomingHistory = (await ThorClient.SearchTxFromRPC(new SearchTxParams
+                {
+                    RpcEndpoint = this.ClientUrl.GetByNetwork(this.Network).RPC,
+                    MessageAction = messageAction,
+                    TransferRecipient = address,
+                    Limit = ThorchainConstantValues.MAX_TX_COUNT,
+                    TxMinHeight = txMinHeight,
+                    TxMaxHeight = txMaxHeight
+                })).Txs;
+
+                var txOutgoingHistory = (await ThorClient.SearchTxFromRPC(new SearchTxParams
+                {
+                    RpcEndpoint = this.ClientUrl.GetByNetwork(this.Network).RPC,
+                    MessageAction = messageAction,
+                    TransferSender = address,
+                    Limit = ThorchainConstantValues.MAX_TX_COUNT,
+                    TxMinHeight = txMinHeight,
+                    TxMaxHeight = txMaxHeight
+                })).Txs;
+
+                var history = new List<RPCTxResult>();
+                history.AddRange(txIncomingHistory);
+                history.AddRange(txOutgoingHistory);
+
+                history.Sort((a, b) =>
+                {
+                    if (a.Height != b.Height)
+                    {
+                        return b.Height.CompareTo(a.Height);
+                    }
+                    if (a.Hash != b.Hash)
+                    {
+                        return a.Hash.CompareTo(b.Hash);
+                    }
+                    return 0;
+                });
+
+                List<RPCTxResult> accumulator = new List<RPCTxResult>();
+
+                history = history.Aggregate(accumulator, (acc, tx) =>
+                    {
+                        if (acc.Count > 0)
+                        {
+                            if (acc[acc.Count - 1].Hash != tx.Hash)
+                            {
+                                acc.Add(tx);
+                            }
+                        }
+                        else
+                        {
+                            acc.Add(tx);
+                        }
+                        return acc;
+                    });
+                history = history.Where((args?.FilterFn) ?? (tx =>
+                    {
+                        var action = ThorchainUtils.GetTxType(tx.TxResult.Data, "base64");
+                        return action == ThorchainConstantValues.MSG_DEPOSIT || action == ThorchainConstantValues.MSG_SEND;
+                    })).Take(ThorchainConstantValues.MAX_TX_COUNT).ToList();
+
+                var total = history.Count;
+
+                history = history.Skip(offset).Take(limit).ToList();
+
+                var txs = new List<Tx>();
+                foreach (var item in history)
+                {
+                    var txData = await this.GetTranasctionData(item.Hash);
+                    txs.Add(txData);
+                }
+
+                return new TxPage
+                {
+                    Total = total,
+                    Txs = txs
+                };
             }
             catch (Exception ex)
             {

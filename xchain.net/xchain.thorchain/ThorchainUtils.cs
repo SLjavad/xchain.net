@@ -237,7 +237,7 @@ namespace xchain.net.xchain.thorchain
                        To = tos,
                        Date = DateTime.Parse(tx.TimeStamp),
                        Hash = tx.TxHash,
-                       type = froms.Count > 0 || tos.Count > 0 ? TxType.transfer : TxType.unknown
+                       Type = froms.Count > 0 || tos.Count > 0 ? TxType.transfer : TxType.unknown
                    });
                    return acc;
                });

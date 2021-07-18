@@ -154,7 +154,7 @@ namespace Xchain.net.xchain.cosmos.SDK
                 }
 
                 var searchParameter = new List<string>();
-                searchParameter.Add($"query={string.Join(" AMD ", queryParameters)}");
+                searchParameter.Add($"query={string.Join(" AND ", queryParameters)}");
 
                 if (searchTxParams.Page.HasValue)
                 {
@@ -167,8 +167,15 @@ namespace Xchain.net.xchain.cosmos.SDK
 
                 searchParameter.Add("order_by=\"desc\"");
 
-                RPCResponse<RPCTxSearchResult> response; //TODO
-                
+                var response = await GlobalHttpClient.HttpClient.GetAsync($"{searchTxParams.RpcEndpoint}/tx_search?{string.Join('&', searchParameter)}");
+                RPCResponse<RPCTxSearchResult> rpcResponse = null;
+                if (response.IsSuccessStatusCode)
+                {
+                    rpcResponse = await response.Content.ReadFromJsonAsync<RPCResponse<RPCTxSearchResult>>();
+                }
+
+                return rpcResponse.Result;
+
             }
             catch (Exception ex)
             {
