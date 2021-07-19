@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Xchain.net.xchain.cosmos.Models
+namespace Xchain.net.xchain.thorchain.Models.Message
 {
     public class MsgCoin
     {

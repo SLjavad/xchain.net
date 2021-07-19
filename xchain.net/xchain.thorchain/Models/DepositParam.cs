@@ -11,7 +11,7 @@ namespace Xchain.net.xchain.thorchain.Models
     public class DepositParam
     {
         [JsonPropertyName("asset")]
-        public Asset Asset { get; set; }
+        public Asset Asset { get; set; } = new AssetRune();
         [JsonPropertyName("amount")]
         public decimal Amount { get; set; }
         [JsonPropertyName("memo")]

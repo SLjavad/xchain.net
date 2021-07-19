@@ -8,9 +8,9 @@ using Xchain.net.xchain.cosmos.Models.Message.Base;
 
 namespace Xchain.net.xchain.cosmos.Models
 {
-    public class AminoWrapper : IMsg
+    public class AminoWrapper<T> : IMsg
     {
-        public AminoWrapper(string type, object value)
+        public AminoWrapper(string type, T value)
         {
             Type = type;
             Value = value;
@@ -24,7 +24,7 @@ namespace Xchain.net.xchain.cosmos.Models
         [JsonPropertyName("type")]
         public string Type { get; set; }
         [JsonPropertyName("value")]
-        public object Value { get; set; }
+        public T Value { get; set; }
 
     }
 }

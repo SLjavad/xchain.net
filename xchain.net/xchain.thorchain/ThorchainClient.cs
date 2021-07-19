@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using xchain.net.xchain.thorchain;
 using Xchain.net.xchain.client;
 using Xchain.net.xchain.client.Models;
+using Xchain.net.xchain.cosmos.Models.Address;
 using Xchain.net.xchain.cosmos.Models.Crypto;
 using Xchain.net.xchain.cosmos.Models.RPC;
 using Xchain.net.xchain.cosmos.Models.Tx;
@@ -15,6 +18,7 @@ using Xchain.net.xchain.crypto;
 using Xchain.net.xchain.thorchain.Constants;
 using Xchain.net.xchain.thorchain.Exceptions;
 using Xchain.net.xchain.thorchain.Models;
+using Xchain.net.xchain.thorchain.Models.Message;
 
 namespace Xchain.net.xchain.thorchain
 {
@@ -112,12 +116,6 @@ namespace Xchain.net.xchain.thorchain
             {
                 this.Phrase = phrase;
             }
-        }
-
-
-        public Task<string> Deposit(DepositParam @params)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<List<Balance>> GetBalance(string address = null, List<Asset> assets = null)
@@ -360,6 +358,81 @@ namespace Xchain.net.xchain.thorchain
         public Task<string> Transfer(TxParams @params)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<string> Deposit(DepositParam depostiParams)
+        {
+            var assetBalance = await this.GetBalance(this.Address, new List<Asset> { depostiParams.Asset });
+            if (assetBalance.Count == 0 || assetBalance[0].Amount < (depostiParams.Amount + ThorchainConstantValues.DEFAULT_GAS_VALUE))
+            {
+                throw new InsufficientFunds(assetBalance[0].Amount, "insufficient funds");
+            }
+
+            var signer = this.Address;
+
+            var msgNativeTx = MsgNativeTx.MsgNativeFromJson(new List<MsgCoin>
+            {
+                new MsgCoin
+                {
+                    Amount = depostiParams.Amount.ToString(),
+                    Asset = ThorchainUtils.GetDenomWithChain(depostiParams.Asset)
+                }
+            }, depostiParams.Memo, signer);
+
+            var unsignedStdTx = await this.BuildDepositTx(msgNativeTx);
+            var privateKey = this.PrivateKey;
+            var accAddress = AccAddress.FromBech32(signer);
+            var fee = unsignedStdTx.Fee;
+
+            fee.Gas = "10000000";
+
+            //TODO: thorclient.signandbroadcast
+
+
+        }
+
+        public async Task<StdTx> BuildDepositTx(MsgNativeTx msgNativeTx)
+        {
+            try
+            {
+                var jsonPostData = JsonSerializer.Serialize(new Dictionary<string,object>
+                {
+                    ["coins"] = msgNativeTx.Coins,
+                    ["memo"] = msgNativeTx.Memo,
+                    ["base_req"] = new
+                    {
+                        chain_id = "thorchain",
+                        from = msgNativeTx.Signer
+                    }
+                });
+
+                var contentPostData = new StringContent(jsonPostData);
+                var result = await GlobalHttpClient.HttpClient.PostAsync($@"{this.ClientUrl.GetByNetwork(this.Network).Node}/thorchain/deposit", contentPostData);
+
+                ThorchainDepositResponse response;
+
+                if (result.IsSuccessStatusCode)
+                {
+                    response = await result.Content.ReadFromJsonAsync<ThorchainDepositResponse>();
+                }
+                else
+                {
+                    throw new Exception("Invalid client url");
+                }
+                if (response.Value == null)
+                {
+                    throw new Exception("Invalid client url");
+                }
+
+                var unsignedStdTx = StdTx.FromJson(response.Value.Msg, response.Value.Fee, new List<StdSignature>(), "");
+
+                return unsignedStdTx;
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("invalid client url", ex);
+            }
         }
 
         public bool ValidateAddress(string address)

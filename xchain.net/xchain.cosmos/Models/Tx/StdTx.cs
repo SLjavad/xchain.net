@@ -19,5 +19,19 @@ namespace Xchain.net.xchain.cosmos.Models.Tx
         public string Memo { get; set; }
         [JsonPropertyName("signature")]
         public List<StdSignature> Signatures { get; set; }
+        [JsonPropertyName("timeout_height")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault | JsonIgnoreCondition.WhenWritingNull)]
+        public string TimeoutHeight { get; set; }
+
+        public static StdTx FromJson(List<IMsg> msgs , StdTxFee fee , List<StdSignature> signatures , string memo)
+        {
+            return new StdTx
+            {
+                Fee = fee,
+                Memo = memo,
+                Msg = msgs,
+                Signatures = signatures
+            };
+        }
     }
 }

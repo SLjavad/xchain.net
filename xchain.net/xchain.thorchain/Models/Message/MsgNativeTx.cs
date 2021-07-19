@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Xchain.net.xchain.cosmos.Models.Address;
 using Xchain.net.xchain.cosmos.Models.Message.Base;
 
-namespace Xchain.net.xchain.cosmos.Models
+namespace Xchain.net.xchain.thorchain.Models.Message
 {
     public class MsgNativeTx : IMsg
     {
@@ -30,6 +30,11 @@ namespace Xchain.net.xchain.cosmos.Models
         [JsonPropertyName("signer")]
         public AccAddress Signer { get; set; }
 
+
+        public static MsgNativeTx MsgNativeFromJson(List<MsgCoin> coins , string memo , string signer)
+        {
+            return new MsgNativeTx(coins, memo, AccAddress.FromBech32(signer));
+        }
 
     }
 }

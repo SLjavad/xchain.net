@@ -12,6 +12,7 @@ using Xchain.net.xchain.cosmos.Models.Message.Base;
 using Xchain.net.xchain.cosmos.Models.Tx;
 using Xchain.net.xchain.thorchain.Constants;
 using Xchain.net.xchain.thorchain.Models;
+using Xchain.net.xchain.util;
 
 namespace xchain.net.xchain.thorchain
 {
@@ -61,6 +62,11 @@ namespace xchain.net.xchain.thorchain
             {
                 return asset.Symbol;
             }
+        }
+
+        public static string GetDenomWithChain(Asset asset)
+        {
+            return $"{ChainConst.THORChain}.{asset.Symbol.ToUpperInvariant()}";
         }
 
         private static byte[] StringToByteArray(string hex)
