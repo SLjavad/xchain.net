@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xchain.net.xchain.client;
 using Xchain.net.xchain.cosmos.Models;
+using Xchain.net.xchain.cosmos.Models.Account;
 using Xchain.net.xchain.cosmos.Models.Address;
 using Xchain.net.xchain.cosmos.Models.Crypto;
 using Xchain.net.xchain.cosmos.Models.RPC;
@@ -179,6 +180,23 @@ namespace Xchain.net.xchain.cosmos.SDK
             }
             catch (Exception ex)
             {
+                throw;
+            }
+        }
+
+
+        public async Task<BroadcastTxCommitResult> SignAndBroadcast(StdTx unsignedStdTx , IPrivateKey privateKey , AccAddress signer)
+        {
+            try
+            {
+                this.SetPrefix();
+
+                //TODO: BaseAccount account 
+
+            }
+            catch (Exception)
+            {
+
                 throw;
             }
         }
