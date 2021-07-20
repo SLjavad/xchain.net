@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -23,28 +24,25 @@ namespace Xchain.net.xchain.cosmos.Models.Account
         [JsonPropertyName("sequence")]
         public int Sequence { get; set; }
 
-        public static BaseAccount FromJson(string value)
+        public static BaseAccount FromJson(dynamic value)
         {
-            var acc = JsonSerializer.Deserialize<BaseAccount>(value, new JsonSerializerOptions
+            var acc = new BaseAccount
             {
-                Converters = {new AccAddressConverter()}
-            });
+                AccountNumber = value.account_number,
+                Address = (IsPropertyExist(value,"address") && value.address != null) ? AccAddress.FromBech32(value.address) : null,
+                Coins = (IsPropertyExist(value, "coins") && value.coins != null) ? value.coins : null,
+                PublicKey = (IsPropertyExist(value, "public_key") && value.public_key != null) ? value.public_key : null,
+                Sequence = (IsPropertyExist(value, "sequence") && value.sequence != null) ? value.sequence : 0
+            };
             return acc;
         }
-    }
 
-    class AccAddressConverter : JsonConverter<AccAddress>
-    {
-        public override AccAddress Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        private static bool IsPropertyExist(dynamic settings, string name)
         {
-            var value = reader.GetString();
-            return AccAddress.FromBech32(value);
-        }
+            if (settings is ExpandoObject)
+                return ((IDictionary<string, object>)settings).ContainsKey(name);
 
-        public override void Write(Utf8JsonWriter writer, AccAddress value, JsonSerializerOptions options)
-        {
-            string acc = value.ToBech32();
-            writer.WriteStringValue(acc);
+            return settings.GetType().GetProperty(name) != null;
         }
     }
 }

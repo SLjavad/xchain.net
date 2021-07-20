@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Xchain.net.xchain.cosmos.Models.Message.Base;
@@ -32,6 +34,46 @@ namespace Xchain.net.xchain.cosmos.Models.Tx
                 Msg = msgs,
                 Signatures = signatures
             };
+        }
+
+        private IEnumerable<JProperty> NestSort(IEnumerable<JProperty> jProperties)
+        {
+            jProperties = jProperties.OrderBy(x => x.Name);
+            foreach (var item in jProperties)
+            {
+                if (item.Value is JObject)
+                {
+                    item.Value = new JObject(NestSort((item.Value as JObject).Properties()));
+                }
+            }
+            return jProperties;
+        }
+
+        public byte[] GetSignBytes(string chainId , string accountNumber , string sequence)
+        {
+            StdSignMsg stdSignMsg = new StdSignMsg
+            {
+                AccountNumber = accountNumber,
+                ChainId = chainId,
+                Fee = this.Fee,
+                Memo = this.Memo,
+                Msgs = this.Msg,
+                Sequence = sequence
+            };
+
+            var serialized = JsonSerializer.Serialize(stdSignMsg);
+
+            JObject jObj = JObject.Parse(serialized);
+
+            var sortedObj = new JObject(
+                NestSort(jObj.Properties())
+            );
+
+            string sortedJson = sortedObj.ToString();
+
+            var stdSignBytes = Encoding.UTF8.GetBytes(sortedJson);
+
+            return stdSignBytes;
         }
     }
 }

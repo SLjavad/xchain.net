@@ -20,7 +20,7 @@ namespace Xchain.net.xchain.cosmos.SDK
     public class CosmosSdkClient
     {
         private readonly string server;
-        private readonly string chainId;
+        public  readonly string chainId; //TODO: change to property
         private readonly string prefix;
         private readonly string derivePath;
 
@@ -184,14 +184,32 @@ namespace Xchain.net.xchain.cosmos.SDK
             }
         }
 
-
         public async Task<BroadcastTxCommitResult> SignAndBroadcast(StdTx unsignedStdTx , IPrivateKey privateKey , AccAddress signer)
         {
             try
             {
                 this.SetPrefix();
 
-                //TODO: BaseAccount account 
+                // accountAddressGet
+                BaseAccount account = null;
+
+                var address = signer.ToBech32();
+                var url = $@"{this.server}/auth/accounts/{address}";
+
+                var result = await GlobalHttpClient.HttpClient.GetAsync(url);
+                if (result.IsSuccessStatusCode)
+                {
+                    dynamic response = (await result.Content.ReadFromJsonAsync<dynamic>()).result;
+                    if (response is BaseAccount)
+                    {
+                        account = response;
+                    }
+                    else
+                    {
+                        BaseAccount baseAccount = (response as BaseAccountResponse).Value; //TODO: just for test
+                        account = BaseAccount.FromJson((response as BaseAccountResponse).Value);
+                    }
+                }
 
             }
             catch (Exception)
@@ -200,5 +218,7 @@ namespace Xchain.net.xchain.cosmos.SDK
                 throw;
             }
         }
+
+        public 
     }
 }
