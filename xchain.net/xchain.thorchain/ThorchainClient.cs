@@ -362,15 +362,17 @@ namespace Xchain.net.xchain.thorchain
 
         public async Task<string> Deposit(DepositParam depostiParams)
         {
-            var assetBalance = await this.GetBalance(this.Address, new List<Asset> { depostiParams.Asset });
-            if (assetBalance.Count == 0 || assetBalance[0].Amount < (depostiParams.Amount + ThorchainConstantValues.DEFAULT_GAS_VALUE))
+            try
             {
-                throw new InsufficientFunds(assetBalance[0].Amount, "insufficient funds");
-            }
+                var assetBalance = await this.GetBalance(this.Address, new List<Asset> { depostiParams.Asset });
+                if (assetBalance.Count == 0 || assetBalance[0].Amount < (depostiParams.Amount + ThorchainConstantValues.DEFAULT_GAS_VALUE))
+                {
+                    throw new InsufficientFunds(assetBalance[0].Amount, "insufficient funds");
+                }
 
-            var signer = this.Address;
+                var signer = this.Address;
 
-            var msgNativeTx = MsgNativeTx.MsgNativeFromJson(new List<MsgCoin>
+                var msgNativeTx = MsgNativeTx.MsgNativeFromJson(new List<MsgCoin>
             {
                 new MsgCoin
                 {
@@ -379,16 +381,24 @@ namespace Xchain.net.xchain.thorchain
                 }
             }, depostiParams.Memo, signer);
 
-            var unsignedStdTx = await this.BuildDepositTx(msgNativeTx);
-            var privateKey = this.PrivateKey;
-            var accAddress = AccAddress.FromBech32(signer);
-            var fee = unsignedStdTx.Fee;
+                var unsignedStdTx = await this.BuildDepositTx(msgNativeTx);
+                var privateKey = this.PrivateKey;
+                var accAddress = AccAddress.FromBech32(signer);
+                var fee = unsignedStdTx.Fee;
 
-            fee.Gas = "10000000";
+                fee.Gas = "10000000";
 
-            //TODO: thorclient.signandbroadcast
-
-
+                var result = await this.ThorClient.SignAndBroadcast(unsignedStdTx, privateKey, accAddress);
+                if (result != null)
+                {
+                    return result.TxHash ?? "";
+                }
+                return "";
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public async Task<StdTx> BuildDepositTx(MsgNativeTx msgNativeTx)

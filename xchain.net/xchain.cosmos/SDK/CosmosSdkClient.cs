@@ -19,7 +19,7 @@ namespace Xchain.net.xchain.cosmos.SDK
 {
     public class CosmosSdkClient
     {
-        private readonly string server;
+        public  readonly string server;
         public  readonly string chainId; //TODO: change to property
         private readonly string prefix;
         private readonly string derivePath;
@@ -211,14 +211,21 @@ namespace Xchain.net.xchain.cosmos.SDK
                     }
                 }
 
+                var signedStdTx = Auth.SignStdTx(this, privateKey, unsignedStdTx, account.AccountNumber.ToString() , account.Sequence.ToString());
+
+                var postTxResult = await Auth.TxPost(this, new BroadcastTxParams
+                {
+                    Mode = "block",
+                    Tx = signedStdTx
+                });
+
+                return postTxResult;
+
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
-
-        public 
     }
 }
