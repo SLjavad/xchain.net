@@ -5,11 +5,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Xchain.net.xchain.client;
 using Xchain.net.xchain.cosmos.Models;
 using Xchain.net.xchain.cosmos.Models.Account;
 using Xchain.net.xchain.cosmos.Models.Address;
+using Xchain.net.xchain.cosmos.Models.Common;
 using Xchain.net.xchain.cosmos.Models.Crypto;
 using Xchain.net.xchain.cosmos.Models.RPC;
 using Xchain.net.xchain.cosmos.Models.Tx;
@@ -89,8 +92,8 @@ namespace Xchain.net.xchain.cosmos.SDK
                 var response = await GlobalHttpClient.HttpClient.GetAsync(apiUrl);
                 if (response.IsSuccessStatusCode)
                 {
-                    var result = await response.Content.ReadFromJsonAsync<List<Models.Coin>>();
-                    return result;
+                    var result = await response.Content.ReadFromJsonAsync<CommonResponse<List<Models.Coin>>>();
+                    return result.Result;
                 }
                 return null;
 
@@ -199,19 +202,30 @@ namespace Xchain.net.xchain.cosmos.SDK
                 var result = await GlobalHttpClient.HttpClient.GetAsync(url);
                 if (result.IsSuccessStatusCode)
                 {
-                    dynamic response = (await result.Content.ReadFromJsonAsync<dynamic>()).result;
-                    if (response is BaseAccount)
+                    var response = await result.Content.ReadFromJsonAsync<CommonResponse<object>>();
+                    if (response.Result is JsonElement jsonElement)
                     {
-                        account = response;
+                        if(jsonElement.TryGetProperty("account_number", out _))
+                        {
+                            account = JsonSerializer.Deserialize<BaseAccount>(jsonElement.GetRawText());
+                        }
+                        else
+                        {
+                            BaseAccountResponse baseAccount = JsonSerializer.Deserialize<BaseAccountResponse>(jsonElement.GetRawText()); //TODO: just for test
+                            account = baseAccount.Value;
+                        }
+                    }
+                    else if (response.Result is BaseAccount baseAccount)
+                    {
+                        account = baseAccount;
                     }
                     else
                     {
-                        BaseAccount baseAccount = (response as BaseAccountResponse).Value; //TODO: just for test
-                        account = BaseAccount.FromJson((response as BaseAccountResponse).Value);
+                        account = BaseAccount.FromJson((response.Result as BaseAccountResponse).Value);
                     }
                 }
 
-                var signedStdTx = Auth.SignStdTx(this, privateKey, unsignedStdTx, account.AccountNumber.ToString() , account.Sequence.ToString());
+                var signedStdTx = Auth.SignStdTx(this, privateKey, unsignedStdTx, account.AccountNumber , account.Sequence);
 
                 var postTxResult = await Auth.TxPost(this, new BroadcastTxParams
                 {
@@ -222,7 +236,7 @@ namespace Xchain.net.xchain.cosmos.SDK
                 return postTxResult;
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }

@@ -26,7 +26,7 @@ namespace Xchain.net.xchain.cosmos.Models.Message
         public List<Coin> Coins { get; set; }
     }
 
-    public class MsgMultiSend : IMsg
+    public class MsgMultiSend : Msg
     {
         public MsgMultiSend(List<Input> inputs, List<Output> outputs)
         {

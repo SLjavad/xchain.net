@@ -22,7 +22,7 @@ namespace Xchain.net.xchain.cosmos
             var sign = new StdSignature
             {
                 PubKey = privateKey.GetPublicKey(),
-                Signature = Encoding.UTF8.GetString(privateKey.Sign(signBytes))
+                Signature = Convert.ToBase64String(privateKey.Sign(signBytes))
             };
 
             var newStdTx = new StdTx

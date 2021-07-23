@@ -10,7 +10,7 @@ using Xchain.net.xchain.cosmos.Models.Message.Base;
 
 namespace Xchain.net.xchain.cosmos.Models.Message
 {
-    public class MsgSend : IMsg
+    public class MsgSend : Msg
     {
         public MsgSend(AccAddress fromAddress, AccAddress toAddress, List<Coin> amount)
         {

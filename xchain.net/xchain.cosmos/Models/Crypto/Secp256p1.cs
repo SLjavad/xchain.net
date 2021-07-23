@@ -85,19 +85,19 @@ namespace Xchain.net.xchain.cosmos.Models.Crypto
             return this.pubKey;
         }
         
-        public string toJsonInCodec()
+        public string ToJsonInCodec()
         {
             return this.ToBase64();
         }
 
-        public IPublicKey fromBase64(string value)
+        public static IPublicKey FromBase64(string value)
         {
             return new PublicKeySecp256k1(Convert.FromBase64String(value));
         }
 
-        public IPublicKey fromJSON(string value)
+        public static IPublicKey FromJSON(string value)
         {
-            return fromBase64(value);
+            return FromBase64(value);
         }
 
         public bool Verify(byte[] signature, byte[] message)

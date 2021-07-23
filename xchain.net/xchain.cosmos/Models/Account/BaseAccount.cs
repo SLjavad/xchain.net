@@ -16,13 +16,14 @@ namespace Xchain.net.xchain.cosmos.Models.Account
         [JsonPropertyName("address")]
         public AccAddress Address { get; set; }
         [JsonPropertyName("public_key")]
+        [JsonConverter(typeof(PublicKeyJsonConverter))]
         public IPublicKey PublicKey { get; set; }
         [JsonPropertyName("coins")]
         public List<Coin> Coins { get; set; }
-        [JsonPropertyName("account_number ")]
-        public int AccountNumber { get; set; }
+        [JsonPropertyName("account_number")]
+        public string AccountNumber { get; set; }
         [JsonPropertyName("sequence")]
-        public int Sequence { get; set; }
+        public string Sequence { get; set; }
 
         public static BaseAccount FromJson(dynamic value)
         {

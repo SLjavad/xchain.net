@@ -7,34 +7,35 @@ using System.Threading.Tasks;
 using Xchain.net.xchain.cosmos.Models.Address;
 using Xchain.net.xchain.cosmos.Models.Message.Base;
 
-namespace Xchain.net.xchain.thorchain.Models.Message
+namespace Xchain.net.xchain.cosmos.Models.Message
 {
-    public class MsgNativeTx : Msg
+    public class MsgDeposit : Msg
     {
-        public MsgNativeTx(List<MsgCoin> coins, string memo, AccAddress signer)
+        public MsgDeposit(List<MsgCoinDeposit> coins, string memo, AccAddress signer)
         {
             Coins = coins;
             Memo = memo;
             Signer = signer;
         }
 
-        public MsgNativeTx()
+        public MsgDeposit()
         {
 
         }
 
         [JsonPropertyName("coins")]
-        public List<MsgCoin> Coins { get; set; }
+        public List<MsgCoinDeposit> Coins { get; set; }
         [JsonPropertyName("memo")]
         public string Memo { get; set; }
         [JsonPropertyName("signer")]
         public AccAddress Signer { get; set; }
+    }
 
-
-        public static MsgNativeTx MsgNativeFromJson(List<MsgCoin> coins , string memo , string signer)
-        {
-            return new MsgNativeTx(coins, memo, AccAddress.FromBech32(signer));
-        }
-
+    public class MsgCoinDeposit
+    {
+        [JsonPropertyName("asset")]
+        public string Asset { get; set; }
+        [JsonPropertyName("amount")]
+        public string Amount { get; set; }
     }
 }

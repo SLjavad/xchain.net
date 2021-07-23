@@ -99,7 +99,7 @@ namespace xchain.net.xchain.thorchain
             }
         }
 
-        public static bool IsMsgSend(IMsg msg)
+        public static bool IsMsgSend(Msg msg)
         {
             if (msg == null)
             {
@@ -112,7 +112,7 @@ namespace xchain.net.xchain.thorchain
             return false;
         }
 
-        public static bool IsMsgMultiSend(IMsg msg)
+        public static bool IsMsgMultiSend(Msg msg)
         {
             if (msg == null)
             {
@@ -139,7 +139,7 @@ namespace xchain.net.xchain.thorchain
             List<Tx> txes = new();
             var result = txs.Aggregate(txes, (acc, tx) =>
                {
-                   List<IMsg> msgs = new();
+                   List<Msg> msgs = new();
 
                    if (tx.Tx is not RawTxResponse)
                    {

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using xchain.net.xchain.thorchain;
 using Xchain.net.xchain.client;
 using Xchain.net.xchain.client.Models;
+using Xchain.net.xchain.cosmos.Models;
 using Xchain.net.xchain.cosmos.Models.Address;
 using Xchain.net.xchain.cosmos.Models.Crypto;
 using Xchain.net.xchain.cosmos.Models.RPC;
@@ -395,7 +396,7 @@ namespace Xchain.net.xchain.thorchain
                 }
                 return "";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }
@@ -412,7 +413,7 @@ namespace Xchain.net.xchain.thorchain
                     ["base_req"] = new
                     {
                         chain_id = "thorchain",
-                        from = msgNativeTx.Signer
+                        from = msgNativeTx.Signer.ToJson()
                     }
                 });
 

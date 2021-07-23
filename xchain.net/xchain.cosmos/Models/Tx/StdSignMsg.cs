@@ -19,7 +19,7 @@ namespace Xchain.net.xchain.cosmos.Models.Tx
         [JsonPropertyName("fee")]
         public StdTxFee Fee { get; set; }
         [JsonPropertyName("msgs")]
-        public List<IMsg> Msgs { get; set; }
+        public List<Msg> Msgs { get; set; }
         [JsonPropertyName("memo")]
         public string Memo { get; set; }
     }

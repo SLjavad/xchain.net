@@ -34,7 +34,7 @@ namespace Xchain.net.xchain.cosmos.Models.Tx
     public class Body
     {
         [JsonPropertyName("messages")]
-        public List<IMsg> Messages { get; set; }
+        public List<Msg> Messages { get; set; }
     }
     public class RawTxResponse
     {

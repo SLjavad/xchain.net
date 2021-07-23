@@ -8,13 +8,14 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Xchain.net.xchain.cosmos.Models.Message.Base;
 using Xchain.net.xchain.cosmos.Models.Tx.Base;
+using Xchain.net.xchain.cosmos.Utils.JsonConverters;
 
 namespace Xchain.net.xchain.cosmos.Models.Tx
 {
     public class StdTx : ITx
     {
         [JsonPropertyName("msg")]
-        public List<IMsg> Msg { get; set; } //TODO: AminoWrapper type
+        public List<Msg> Msg { get; set; } //TODO: AminoWrapper type
         [JsonPropertyName("fee")]
         public StdTxFee Fee { get; set; }
         [JsonPropertyName("memo")]
@@ -25,7 +26,7 @@ namespace Xchain.net.xchain.cosmos.Models.Tx
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault | JsonIgnoreCondition.WhenWritingNull)]
         public string TimeoutHeight { get; set; }
 
-        public static StdTx FromJson(List<IMsg> msgs , StdTxFee fee , List<StdSignature> signatures , string memo)
+        public static StdTx FromJson(List<Msg> msgs , StdTxFee fee , List<StdSignature> signatures , string memo)
         {
             return new StdTx
             {
@@ -36,6 +37,22 @@ namespace Xchain.net.xchain.cosmos.Models.Tx
             };
         }
 
+        private JArray NestArraySort(JArray jArray)
+        {
+            for (int i = 0; i < jArray.Count; i++)
+            {
+                if (jArray[i] is JObject obj)
+                {
+                    jArray[i] = new JObject(NestSort(obj.Properties()));
+                }
+                else if (jArray[i] is JArray jArr)
+                {
+                    return NestArraySort(jArr);
+                }
+            }
+            return jArray;
+        }
+
         private IEnumerable<JProperty> NestSort(IEnumerable<JProperty> jProperties)
         {
             jProperties = jProperties.OrderBy(x => x.Name);
@@ -44,6 +61,10 @@ namespace Xchain.net.xchain.cosmos.Models.Tx
                 if (item.Value is JObject)
                 {
                     item.Value = new JObject(NestSort((item.Value as JObject).Properties()));
+                }
+                if (item.Value is JArray jArray)
+                {
+                    NestArraySort(jArray);
                 }
             }
             return jProperties;

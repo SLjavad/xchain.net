@@ -8,7 +8,7 @@ using Xchain.net.xchain.cosmos.Models.Message.Base;
 
 namespace Xchain.net.xchain.cosmos.Models
 {
-    public class AminoWrapper<T> : IMsg
+    public class AminoWrapper<T> : Msg
     {
         public AminoWrapper(string type, T value)
         {
