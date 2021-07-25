@@ -14,6 +14,8 @@ using Xchain.net.xchain.cosmos.Models.Account;
 using Xchain.net.xchain.cosmos.Models.Address;
 using Xchain.net.xchain.cosmos.Models.Common;
 using Xchain.net.xchain.cosmos.Models.Crypto;
+using Xchain.net.xchain.cosmos.Models.Message;
+using Xchain.net.xchain.cosmos.Models.Message.Base;
 using Xchain.net.xchain.cosmos.Models.RPC;
 using Xchain.net.xchain.cosmos.Models.Tx;
 using Xchain.net.xchain.crypto;
@@ -22,14 +24,14 @@ namespace Xchain.net.xchain.cosmos.SDK
 {
     public class CosmosSdkClient
     {
-        public  readonly string server;
-        public  readonly string chainId; //TODO: change to property
+        public readonly string server;
+        public readonly string chainId; //TODO: change to property
         private readonly string prefix;
         private readonly string derivePath;
 
         private const string BASE_PATH = "https://api.cosmos.network";
 
-        public CosmosSdkClient(string server , string chainId , string prefix = "cosmos" , string derivePath = "44'/118'/0'/0/0")
+        public CosmosSdkClient(string server, string chainId, string prefix = "cosmos", string derivePath = "44'/118'/0'/0/0")
         {
             this.server = server;
             this.chainId = chainId;
@@ -187,7 +189,7 @@ namespace Xchain.net.xchain.cosmos.SDK
             }
         }
 
-        public async Task<BroadcastTxCommitResult> SignAndBroadcast(StdTx unsignedStdTx , IPrivateKey privateKey , AccAddress signer)
+        public async Task<BroadcastTxCommitResult> SignAndBroadcast(StdTx unsignedStdTx, IPrivateKey privateKey, AccAddress signer)
         {
             try
             {
@@ -205,7 +207,7 @@ namespace Xchain.net.xchain.cosmos.SDK
                     var response = await result.Content.ReadFromJsonAsync<CommonResponse<object>>();
                     if (response.Result is JsonElement jsonElement)
                     {
-                        if(jsonElement.TryGetProperty("account_number", out _))
+                        if (jsonElement.TryGetProperty("account_number", out _))
                         {
                             account = JsonSerializer.Deserialize<BaseAccount>(jsonElement.GetRawText());
                         }
@@ -225,7 +227,7 @@ namespace Xchain.net.xchain.cosmos.SDK
                     }
                 }
 
-                var signedStdTx = Auth.SignStdTx(this, privateKey, unsignedStdTx, account.AccountNumber , account.Sequence);
+                var signedStdTx = Auth.SignStdTx(this, privateKey, unsignedStdTx, account.AccountNumber, account.Sequence);
 
                 var postTxResult = await Auth.TxPost(this, new BroadcastTxParams
                 {
@@ -240,6 +242,50 @@ namespace Xchain.net.xchain.cosmos.SDK
             {
                 throw;
             }
+        }
+
+        public Task<BroadcastTxCommitResult> Transfer(TransferParams transferParams)
+        {
+            try
+            {
+                this.SetPrefix();
+
+                var msg = new List<Msg>
+            {
+                new MsgSend
+                {
+                    Amount = new List<Models.Coin>
+                    {
+                        new Models.Coin
+                        {
+                            Amount = transferParams.Amount,
+                            Denom = transferParams.Asset
+                        }
+                    },
+                    FromAddress = AccAddress.FromBech32(transferParams.From),
+                    ToAddress = AccAddress.FromBech32(transferParams.To)
+                }
+            };
+
+                List<StdSignature> signatures = new();
+
+                var unsignedStdTx = new StdTx
+                {
+                    Fee = transferParams.Fee,
+                    Msg = msg,
+                    Memo = transferParams.Memo,
+                    Signatures = signatures
+                };
+
+                var res = this.SignAndBroadcast(unsignedStdTx, transferParams.PrivKey, AccAddress.FromBech32(transferParams.From));
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+
         }
     }
 }

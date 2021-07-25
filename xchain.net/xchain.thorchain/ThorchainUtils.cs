@@ -262,5 +262,7 @@ namespace xchain.net.xchain.thorchain
                 Fastest = fee
             };
         }
+
+        public static bool IsBroadcastSuccess(BroadcastTxCommitResult result) => result.Logs != null;
     }
 }

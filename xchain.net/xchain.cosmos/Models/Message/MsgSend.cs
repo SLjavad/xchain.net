@@ -19,6 +19,11 @@ namespace Xchain.net.xchain.cosmos.Models.Message
             Amount = amount;
         }
 
+        public MsgSend()
+        {
+
+        }
+
         [JsonPropertyName("from_address")]
         public AccAddress FromAddress { get; set; }
         [JsonPropertyName("to_address")]

@@ -356,9 +356,54 @@ namespace Xchain.net.xchain.thorchain
             //this.PrivateKey = null;
         }
 
-        public Task<string> Transfer(TxParams @params)
+        public async Task<string> Transfer(TxParams transferParams)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var prefix = ThorchainUtils.GetPrefix(this.Network);
+                AccAddress.SetBech32Prefix(
+                    prefix,
+                    prefix + "pub",
+                    prefix + "valoper",
+                    prefix + "valoperpub",
+                    prefix + "valcons",
+                    prefix + "valconspub"
+                  );
+
+                var assetBalance = await this.GetBalance(this.Address, new List<Asset> { transferParams.Asset });
+                var fee = await this.GetFees();
+                if (assetBalance.Count == 0 || assetBalance[0].Amount < (transferParams.Amount + fee.Average))
+                {
+                    throw new InsufficientFunds(assetBalance[0].Amount, "insufficient funds");
+                }
+
+                var transferResult = await this.ThorClient.Transfer(new TransferParams
+                {
+                    PrivKey = this.PrivateKey,
+                    From = this.Address,
+                    To = transferParams.Recipient,
+                    Amount = transferParams.Amount,
+                    Asset = ThorchainUtils.GetDenom(transferParams.Asset),
+                    Fee = new StdTxFee
+                    {
+                        Amount = new List<Coin>(),
+                        Gas = ThorchainConstantValues.DEFAULT_GAS_VALUE.ToString()
+                    },
+                    Memo = transferParams.Memo
+                });
+
+                if (!ThorchainUtils.IsBroadcastSuccess(transferResult))
+                {
+                    throw new Exception($"Failed to broadcast transaction {transferResult.TxHash}");
+                }
+
+                return string.IsNullOrEmpty(transferResult?.TxHash) ? transferResult?.TxHash : "";
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            
         }
 
         public async Task<string> Deposit(DepositParam depostiParams)

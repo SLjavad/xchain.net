@@ -25,7 +25,7 @@ namespace Xchain.net.xchain.client
         Task<TxPage> GetTransactions(TxHistoryParams txHistoryParams = null);
         Task<Tx> GetTranasctionData(string txId, string assetAddress = null);
         Task<Fees> GetFees(FeeParams @params = null);
-        Task<string> Transfer(TxParams @params);
+        Task<string> Transfer(TxParams transferParams);
         void PurgeClient();
     } 
 }
