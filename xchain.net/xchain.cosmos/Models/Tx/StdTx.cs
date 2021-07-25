@@ -20,7 +20,7 @@ namespace Xchain.net.xchain.cosmos.Models.Tx
         public StdTxFee Fee { get; set; }
         [JsonPropertyName("memo")]
         public string Memo { get; set; }
-        [JsonPropertyName("signature")]
+        [JsonPropertyName("signatures")]
         public List<StdSignature> Signatures { get; set; }
         [JsonPropertyName("timeout_height")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault | JsonIgnoreCondition.WhenWritingNull)]
@@ -90,7 +90,7 @@ namespace Xchain.net.xchain.cosmos.Models.Tx
                 NestSort(jObj.Properties())
             );
 
-            string sortedJson = sortedObj.ToString();
+            string sortedJson = sortedObj.ToString(Newtonsoft.Json.Formatting.None);
 
             var stdSignBytes = Encoding.UTF8.GetBytes(sortedJson);
 

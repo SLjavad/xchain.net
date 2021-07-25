@@ -390,11 +390,11 @@ namespace Xchain.net.xchain.thorchain
                 fee.Gas = "10000000";
 
                 var result = await this.ThorClient.SignAndBroadcast(unsignedStdTx, privateKey, accAddress);
-                if (result != null)
+                if (result != null && !string.IsNullOrEmpty(result.Data) && !string.IsNullOrEmpty(result.RawLog) && !string.IsNullOrEmpty(result.GasUsed) && !string.IsNullOrEmpty(result.GasWanted))
                 {
-                    return result.TxHash ?? "";
+                    return result.TxHash;
                 }
-                return "";
+                return null;
             }
             catch (Exception ex)
             {

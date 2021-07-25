@@ -48,6 +48,7 @@ namespace Xchain.net.Test
                 Amount = send_amount,
                 Memo = memo
             });
+            Console.WriteLine(result);
         }
 
         static void Main(string[] args)

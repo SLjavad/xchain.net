@@ -29,7 +29,8 @@ namespace Xchain.net.xchain.cosmos.Models.Crypto
         public byte[] Sign(byte[] message)
         {
             var hash = SHA256.Create().ComputeHash(message);
-            var signature = Secp256K1Manager.SignCompressedCompact(hash, this.privKey); //TODO: change lib
+            var signature = Secp256K1Manager.SignCompressedCompact(hash, this.privKey); //TODO: change lib // first field not needed
+            signature = signature.Skip(1).ToArray();
 
             return signature;
         }
