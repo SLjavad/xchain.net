@@ -397,7 +397,7 @@ namespace Xchain.net.xchain.thorchain
                     throw new Exception($"Failed to broadcast transaction {transferResult.TxHash}");
                 }
 
-                return string.IsNullOrEmpty(transferResult?.TxHash) ? transferResult?.TxHash : "";
+                return !string.IsNullOrEmpty(transferResult?.TxHash) ? transferResult?.TxHash : "";
             }
             catch (Exception ex)
             {
