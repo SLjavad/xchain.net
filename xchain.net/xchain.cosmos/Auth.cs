@@ -10,6 +10,7 @@ using Xchain.net.xchain.client;
 using Xchain.net.xchain.cosmos.Models.Crypto;
 using Xchain.net.xchain.cosmos.Models.Tx;
 using Xchain.net.xchain.cosmos.SDK;
+using Xchain.net.xchain.cosmos.Utils.JsonConverters;
 
 namespace Xchain.net.xchain.cosmos
 {
@@ -42,7 +43,14 @@ namespace Xchain.net.xchain.cosmos
             {
                 var url = $"{cosmosSdkClient.server}/txs";
 
-                var serializedParams = JsonSerializer.Serialize(broadcastTxParams);
+                var serializedParams = JsonSerializer.Serialize(broadcastTxParams ,new JsonSerializerOptions
+                {
+                    Converters =
+                    {
+                        new MsgSendNumToStringConverter()
+                    }
+                });
+
                 var dataToPost = new StringContent(serializedParams);
 
                 var response = await GlobalHttpClient.HttpClient.PostAsync(url, dataToPost);
@@ -50,6 +58,11 @@ namespace Xchain.net.xchain.cosmos
                 {
                     var result = await response.Content.ReadFromJsonAsync<BroadcastTxCommitResult>();
                     return result;
+                }
+                else
+                {
+                    var result = await response.Content.ReadAsStringAsync();
+                    throw new Exception(result);
                 }
                 return null;
             }

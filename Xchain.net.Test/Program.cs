@@ -51,9 +51,26 @@ namespace Xchain.net.Test
             Console.WriteLine(result);
         }
 
+        private static async Task Transfer()
+        {
+            var send_amount = 10000;
+            var memo = "transfer";
+            string mnemonic = "rural bright ball negative already grass good grant nation screen model pizza";
+            var to_address = "tthor1pttyuys2muhj674xpr9vutsqcxj9hepy4ddueq";
+            var client = new ThorchainClient(mnemonic, null, null, xchain.client.Models.Network.testnet);
+            var result = await client.Transfer(new xchain.client.Models.TxParams
+            {
+                Asset = new AssetRune(),
+                Amount = send_amount,
+                Memo = memo,
+                Recipient = to_address
+            });
+            Console.WriteLine(result);
+        }
+
         static void Main(string[] args)
         {
-            TestDeposit();
+            Transfer();
             Console.ReadKey();
         }
     }

@@ -213,7 +213,7 @@ namespace Xchain.net.xchain.cosmos.SDK
                         }
                         else
                         {
-                            BaseAccountResponse baseAccount = JsonSerializer.Deserialize<BaseAccountResponse>(jsonElement.GetRawText()); //TODO: just for test
+                            AminoWrapper<BaseAccount> baseAccount = JsonSerializer.Deserialize<AminoWrapper<BaseAccount>>(jsonElement.GetRawText());
                             account = baseAccount.Value;
                         }
                     }
@@ -251,21 +251,21 @@ namespace Xchain.net.xchain.cosmos.SDK
                 this.SetPrefix();
 
                 var msg = new List<Msg>
-            {
-                new MsgSend
-                {
-                    Amount = new List<Models.Coin>
                     {
-                        new Models.Coin
+                        new MsgSend
                         {
-                            Amount = transferParams.Amount,
-                            Denom = transferParams.Asset
+                            Amount = new List<Models.Coin>
+                            {
+                                new Models.Coin
+                                {
+                                    Amount = transferParams.Amount,
+                                    Denom = transferParams.Asset
+                                }
+                            },
+                            FromAddress = AccAddress.FromBech32(transferParams.From),
+                            ToAddress = AccAddress.FromBech32(transferParams.To)
                         }
-                    },
-                    FromAddress = AccAddress.FromBech32(transferParams.From),
-                    ToAddress = AccAddress.FromBech32(transferParams.To)
-                }
-            };
+                    };
 
                 List<StdSignature> signatures = new();
 

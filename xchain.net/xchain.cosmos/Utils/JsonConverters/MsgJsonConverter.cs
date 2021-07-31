@@ -54,13 +54,19 @@ namespace Xchain.net.xchain.cosmos.Utils.JsonConverters
 
         public override void Write(Utf8JsonWriter writer, Msg value, JsonSerializerOptions options)
         {
-            switch (value)
+            switch (value) // simplify this switch case
             {
                 case MsgDeposit msgDeposit:
-                    JsonSerializer.Serialize(writer, msgDeposit);
+                    JsonSerializer.Serialize(writer, msgDeposit , options);
                     break;
                 case AminoWrapper<MsgDeposit> aminoWrapper:
-                    JsonSerializer.Serialize(writer, aminoWrapper);
+                    JsonSerializer.Serialize(writer, aminoWrapper , options);
+                    break;
+                case AminoWrapper<MsgSend> aminoWrapperSend:
+                    JsonSerializer.Serialize(writer, aminoWrapperSend , options);
+                    break;
+                case MsgSend msgSend:
+                    JsonSerializer.Serialize(writer, new AminoWrapper<MsgSend>(ConstantValues.THORCHAIN_MSGSEND , msgSend) , options);
                     break;
                 default:
                     break;

@@ -82,7 +82,13 @@ namespace Xchain.net.xchain.cosmos.Models.Tx
                 Sequence = sequence
             };
 
-            var serialized = JsonSerializer.Serialize(stdSignMsg);
+            var serialized = JsonSerializer.Serialize(stdSignMsg , new JsonSerializerOptions
+            {
+                Converters =
+                {
+                    new MsgSendNumToStringConverter()
+                }
+            });
 
             JObject jObj = JObject.Parse(serialized);
 
