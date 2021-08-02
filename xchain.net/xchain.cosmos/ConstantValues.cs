@@ -12,5 +12,6 @@ namespace Xchain.net.xchain.cosmos
         public const string THORCHAIN_MSGDEPOSIT = "thorchain/MsgDeposit";
         public const string THORCHAIN_MSGSEND = "thorchain/MsgSend";
         public const string THORCHAIN_MSG_MULTI_SEND = "thorchain/MsgMultiSend";
+        public const string COSMOS_STDTX = "cosmos-sdk/StdTx";
     }
 }

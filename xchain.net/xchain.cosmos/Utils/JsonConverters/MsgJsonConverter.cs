@@ -33,7 +33,7 @@ namespace Xchain.net.xchain.cosmos.Utils.JsonConverters
                         type = reader.GetString();
                         break;
                     case "value":
-                        value = JsonSerializer.Deserialize<JsonElement>(ref reader);
+                        value = JsonSerializer.Deserialize<JsonElement>(ref reader , options);
                         break;
                     default:
                         return JsonSerializer.Deserialize<Msg>(ref reader, options);
@@ -45,21 +45,21 @@ namespace Xchain.net.xchain.cosmos.Utils.JsonConverters
                 case ConstantValues.THORCHAIN_MSGDEPOSIT:
                     {
                         var valueString = value.Value.GetRawText();
-                        MsgDeposit valueObject = JsonSerializer.Deserialize<MsgDeposit>(valueString);
+                        MsgDeposit valueObject = JsonSerializer.Deserialize<MsgDeposit>(valueString , options);
                         var msgResult = new AminoWrapper<MsgDeposit>(type, valueObject);
                         return msgResult;
                     }
                 case ConstantValues.THORCHAIN_MSGSEND:
                     {
                         var valueString = value.Value.GetRawText();
-                        MsgSend valueObject = JsonSerializer.Deserialize<MsgSend>(valueString);
+                        MsgSend valueObject = JsonSerializer.Deserialize<MsgSend>(valueString , options);
                         var msgResult = new AminoWrapper<MsgSend>(type, valueObject);
                         return msgResult;
                     }
                 case ConstantValues.THORCHAIN_MSG_MULTI_SEND:
                     {
                         var valueString = value.Value.GetRawText();
-                        MsgMultiSend valueObject = JsonSerializer.Deserialize<MsgMultiSend>(valueString);
+                        MsgMultiSend valueObject = JsonSerializer.Deserialize<MsgMultiSend>(valueString , options);
                         var msgResult = new AminoWrapper<MsgMultiSend>(type, valueObject);
                         return msgResult;
                     }

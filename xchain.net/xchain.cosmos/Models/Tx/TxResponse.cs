@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Xchain.net.xchain.cosmos.Models.Message.Base;
+using Xchain.net.xchain.cosmos.Utils.JsonConverters;
 
 namespace Xchain.net.xchain.cosmos.Models.Tx
 {
@@ -26,6 +27,7 @@ namespace Xchain.net.xchain.cosmos.Models.Tx
         [JsonPropertyName("gas_used")]
         public string GasUsed { get; set; }
         [JsonPropertyName("tx")]
+        [JsonConverter(typeof(TxJsonConverter))]
         public object Tx { get; set; }
         [JsonPropertyName("timestamp")]
         public string TimeStamp { get; set; }
