@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Xchain.net.xchain.thorchain.Models.Message;
 
 namespace Xchain.net.xchain.thorchain.Models
 {
@@ -19,27 +20,11 @@ namespace Xchain.net.xchain.thorchain.Models
         [JsonPropertyName("to_address")]
         public string ToAddress { get; set; }
         [JsonPropertyName("coins")]
-        public List<ObservedTx_Coin> Coins { get; set; }
+        public List<MsgCoin> Coins { get; set; }
         [JsonPropertyName("gas")]
-        public List<ObservedTx_Gas> Gas { get; set; }
+        public List<MsgCoin> Gas { get; set; }
         [JsonPropertyName("memo")]
         public string Memo { get; set; }
-    }
-
-    public class ObservedTx_Coin
-    {
-        [JsonPropertyName("asset")]
-        public string Asset { get; set; }
-        [JsonPropertyName("amount")]
-        public string Amount { get; set; }
-    }
-
-    public class ObservedTx_Gas
-    {
-        [JsonPropertyName("asset")]
-        public string Asset { get; set; }
-        [JsonPropertyName("amount")]
-        public string Amount { get; set; }
     }
 
     public class ObservedTx

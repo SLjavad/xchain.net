@@ -253,18 +253,26 @@ namespace Xchain.net.xchain.thorchain
 
         public async Task<TxPage> GetTransactions(TxHistoryParams txHistoryParams = null)
         {
-            var args = txHistoryParams as TxHistoryParamFilter;
-
-            string messageAction = null;
-            var address = args?.Address ?? this.Address;
-            var offset = args?.Offset ?? 0;
-            var limit = args?.Limit ?? 10;
-            int? txMinHeight = null;
-            int? txMaxHeight = null;
-
             try
             {
-                //TODO: registerCodecs(this.network)
+                var prefix = ThorchainUtils.GetPrefix(this.Network);
+                AccAddress.SetBech32Prefix(
+                    prefix,
+                    prefix + "pub",
+                    prefix + "valoper",
+                    prefix + "valoperpub",
+                    prefix + "valcons",
+                    prefix + "valconspub"
+                  );
+
+                var args = (TxHistoryParamFilter)txHistoryParams;
+
+                string messageAction = null;
+                var address = args?.Address ?? this.Address;
+                var offset = args?.Offset ?? 0;
+                var limit = args?.Limit ?? 10;
+                int? txMinHeight = null;
+                int? txMaxHeight = null;
 
                 var txIncomingHistory = (await ThorClient.SearchTxFromRPC(new SearchTxParams
                 {

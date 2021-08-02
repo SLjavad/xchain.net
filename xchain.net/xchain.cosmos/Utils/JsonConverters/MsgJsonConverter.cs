@@ -40,12 +40,31 @@ namespace Xchain.net.xchain.cosmos.Utils.JsonConverters
                 }
             }
 
-            if (type == ConstantValues.THORCHAIN_MSGDEPOSIT)
+            switch (type)
             {
-                var valueString = value.Value.GetRawText();
-                MsgDeposit valueObject = JsonSerializer.Deserialize<MsgDeposit>(valueString);
-                var msgResult = new AminoWrapper<MsgDeposit>(type, valueObject);
-                return msgResult;
+                case ConstantValues.THORCHAIN_MSGDEPOSIT:
+                    {
+                        var valueString = value.Value.GetRawText();
+                        MsgDeposit valueObject = JsonSerializer.Deserialize<MsgDeposit>(valueString);
+                        var msgResult = new AminoWrapper<MsgDeposit>(type, valueObject);
+                        return msgResult;
+                    }
+                case ConstantValues.THORCHAIN_MSGSEND:
+                    {
+                        var valueString = value.Value.GetRawText();
+                        MsgSend valueObject = JsonSerializer.Deserialize<MsgSend>(valueString);
+                        var msgResult = new AminoWrapper<MsgSend>(type, valueObject);
+                        return msgResult;
+                    }
+                case ConstantValues.THORCHAIN_MSG_MULTI_SEND:
+                    {
+                        var valueString = value.Value.GetRawText();
+                        MsgMultiSend valueObject = JsonSerializer.Deserialize<MsgMultiSend>(valueString);
+                        var msgResult = new AminoWrapper<MsgMultiSend>(type, valueObject);
+                        return msgResult;
+                    }
+                default:
+                    break;
             }
 
             return JsonSerializer.Deserialize<Msg>(ref reader, options);
@@ -67,6 +86,12 @@ namespace Xchain.net.xchain.cosmos.Utils.JsonConverters
                     break;
                 case MsgSend msgSend:
                     JsonSerializer.Serialize(writer, new AminoWrapper<MsgSend>(ConstantValues.THORCHAIN_MSGSEND , msgSend) , options);
+                    break;
+                case MsgMultiSend msgMultiSend:
+                    JsonSerializer.Serialize(writer, new AminoWrapper<MsgMultiSend>(ConstantValues.THORCHAIN_MSG_MULTI_SEND, msgMultiSend), options);
+                    break;
+                case AminoWrapper<MsgMultiSend> aminoWrapperMultiSend:
+                    JsonSerializer.Serialize(writer, aminoWrapperMultiSend, options);
                     break;
                 default:
                     break;

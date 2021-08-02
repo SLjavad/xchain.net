@@ -9,23 +9,10 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Xchain.net.xchain.cosmos.Models.Address.Prefix;
 using Xchain.net.xchain.cosmos.Models.Crypto;
+using Xchain.net.xchain.cosmos.Utils.JsonConverters;
 
 namespace Xchain.net.xchain.cosmos.Models.Address
 {
-
-    public class AccAddressJsonConvert : JsonConverter<AccAddress>
-    {
-        public override AccAddress Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            return AccAddress.FromBech32(reader.GetString());
-        }
-
-        public override void Write(Utf8JsonWriter writer, AccAddress value, JsonSerializerOptions options)
-        {
-            writer.WriteStringValue(value.ToBech32());
-        }
-    }
-
     [JsonConverter(typeof(AccAddressJsonConvert))]
     public class AccAddress : BaseAddress
     {

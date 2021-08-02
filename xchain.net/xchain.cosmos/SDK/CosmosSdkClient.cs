@@ -136,48 +136,55 @@ namespace Xchain.net.xchain.cosmos.SDK
                 var queryParameters = new List<string>();
                 if (!string.IsNullOrEmpty(searchTxParams.MessageAction))
                 {
-                    queryParameters.Add($"message.action={searchTxParams.MessageAction}");
+                    queryParameters.Add($"message.action='{searchTxParams.MessageAction}'");
                 }
                 if (!string.IsNullOrEmpty(searchTxParams.MessageSender))
                 {
-                    queryParameters.Add($"message.sender={searchTxParams.MessageSender}");
+                    queryParameters.Add($"message.sender='{searchTxParams.MessageSender}'");
                 }
                 if (!string.IsNullOrEmpty(searchTxParams.TransferSender))
                 {
-                    queryParameters.Add($"transfer.sender={searchTxParams.TransferSender}");
+                    queryParameters.Add($"transfer.sender='{searchTxParams.TransferSender}'");
                 }
                 if (!string.IsNullOrEmpty(searchTxParams.TransferRecipient))
                 {
-                    queryParameters.Add($"transfer.recipient={searchTxParams.TransferRecipient}");
+                    queryParameters.Add($"transfer.recipient='{searchTxParams.TransferRecipient}'");
                 }
                 if (searchTxParams.TxMinHeight.HasValue)
                 {
-                    queryParameters.Add($"tx.height>={searchTxParams.TxMinHeight}");
+                    queryParameters.Add($"tx.height>='{searchTxParams.TxMinHeight}'");
                 }
                 if (searchTxParams.TxMaxHeight.HasValue)
                 {
-                    queryParameters.Add($"tx.height<={searchTxParams.TxMaxHeight}");
+                    queryParameters.Add($"tx.height<='{searchTxParams.TxMaxHeight}'");
                 }
 
                 var searchParameter = new List<string>();
-                searchParameter.Add($"query={string.Join(" AND ", queryParameters)}");
+                var qParams = string.Join(" AND ", queryParameters);
+                searchParameter.Add($"query=\"{qParams}\"");
 
                 if (searchTxParams.Page.HasValue)
                 {
-                    searchParameter.Add($"page={searchTxParams.Page}");
+                    searchParameter.Add($"page=\"{searchTxParams.Page}\"");
                 }
                 if (searchTxParams.Limit.HasValue)
                 {
-                    searchParameter.Add($"per_page={searchTxParams.Limit}");
+                    searchParameter.Add($"per_page=\"{searchTxParams.Limit}\"");
                 }
 
                 searchParameter.Add("order_by=\"desc\"");
 
-                var response = await GlobalHttpClient.HttpClient.GetAsync($"{searchTxParams.RpcEndpoint}/tx_search?{string.Join('&', searchParameter)}");
+                var reqParams = string.Join('&', searchParameter);
+                var response = await GlobalHttpClient.HttpClient.GetAsync($"{searchTxParams.RpcEndpoint}/tx_search?{reqParams}");
                 RPCResponse<RPCTxSearchResult> rpcResponse = null;
                 if (response.IsSuccessStatusCode)
                 {
                     rpcResponse = await response.Content.ReadFromJsonAsync<RPCResponse<RPCTxSearchResult>>();
+                }
+                else
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    throw new Exception(res);
                 }
 
                 return rpcResponse.Result;
