@@ -190,7 +190,7 @@ namespace Xchain.net.xchain.thorchain
                 }
                 return txs[0];
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }

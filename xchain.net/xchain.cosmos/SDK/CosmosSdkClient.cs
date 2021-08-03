@@ -121,7 +121,15 @@ namespace Xchain.net.xchain.cosmos.SDK
                     var result = await response.Content.ReadFromJsonAsync<TxResponse>();
                     return result;
                 }
-                throw new Exception("Transaction not found");
+                else
+                {
+                    if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        throw new Exception("Transaction not found");
+                    }
+                    var res = await response.Content.ReadAsStringAsync();
+                    throw new Exception(res);
+                }
             }
             catch (Exception)
             {

@@ -30,11 +30,13 @@ namespace Xchain.net.Test
             string hex = BitConverter.ToString(key.ToBuffer()).Replace("-", " ");
         }
 
-        private static void TestgetTransactionData()
+        private static async Task TestgetTransactionData()
         {
             string mnemonic = "rural bright ball negative already grass good grant nation screen model pizza";
             var thorClient = new ThorchainClient(mnemonic, null, null, xchain.client.Models.Network.testnet);
-            var res = thorClient.GetTranasctionData("9D2B0AB362A5BF8689F0A984AB9B76129B83917D13638203FC7B03D6D97971BC");
+            var res = await thorClient.GetTranasctionData("3F597EB07CC6158544BB19E011C11E960CBFCCF83A02B0834832EE5B7817C897");
+            //20DEC786556B36E1C17583D7FC91586ACD51028B340D0937FA1C9DAB45AF0C89
+            Console.WriteLine(res);
         }
 
         private static async Task TestDeposit()
@@ -85,7 +87,7 @@ namespace Xchain.net.Test
 
         static void Main(string[] args)
         {
-            TestGetTransactions();
+            TestgetTransactionData();
             Console.ReadKey();
         }
     }
