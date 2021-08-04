@@ -1,9 +1,9 @@
 using System;
 using Xunit;
 
-namespace XchainDotnet.Cosmos.Test
+namespace XchainDotnet.Crypto.Test
 {
-    public class UnitTest1
+    public class XchainCryptoTest
     {
         [Fact]
         public void Test1()
