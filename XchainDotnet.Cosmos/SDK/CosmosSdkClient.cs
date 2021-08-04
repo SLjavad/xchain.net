@@ -126,7 +126,7 @@ namespace XchainDotnet.Cosmos.SDK
                     throw new Exception(res);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 throw new Exception("Transaction not found");
             }

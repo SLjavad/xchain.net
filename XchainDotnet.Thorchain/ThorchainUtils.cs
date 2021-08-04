@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using XchainDotnet.Client;
 using XchainDotnet.Client.Models;
+using XchainDotnet.Cosmos.Models;
 using XchainDotnet.Cosmos.Models.Address;
 using XchainDotnet.Cosmos.Models.Message;
 using XchainDotnet.Cosmos.Models.Message.Base;
@@ -138,14 +139,28 @@ namespace XchainDotnet.Thorchain
                {
                    List<Msg> msgs = new();
 
-                   if (tx.Tx is not RawTxResponse)
+                   switch (tx.Tx)
                    {
-                       msgs = new((tx.Tx as StdTx).Msg);
+                       case RawTxResponse rawTxResponse:
+                           msgs = new((tx.Tx as RawTxResponse).Body.Messages);
+                           break;
+                       case StdTx stdTx:
+                           msgs = new((tx.Tx as StdTx).Msg);
+                           break;
+                       case AminoWrapper<StdTx> aminoTx:
+                           msgs = new((tx.Tx as AminoWrapper<StdTx>).Value.Msg);
+                           break;
+                       default:
+                           break;
                    }
-                   else
+                   msgs = msgs.Select(x =>
                    {
-                       msgs = new((tx.Tx as RawTxResponse).Body.Messages);
-                   }
+                       if (x.GetType().GetGenericTypeDefinition() == typeof(AminoWrapper<>))
+                       {
+                           return (Msg)((dynamic)x).Value;
+                       }
+                       return x;
+                   }).ToList();
 
                    List<TxFrom> froms = new();
                    List<TxTo> tos = new();
