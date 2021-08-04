@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xchain.net.xchain.cosmos.SDK;
-using Xchain.net.xchain.thorchain.Models;
+﻿using System.Threading.Tasks;
+using XchainDotnet.Thorchain.Models;
 
-namespace Xchain.net.xchain.thorchain
+namespace XchainDotnet.Thorchain
 {
     public interface IThorchianClient
     {

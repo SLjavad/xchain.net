@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Xchain.net.xchain.thorchain.Exceptions
+namespace XchainDotnet.Thorchain.Exceptions
 {
     public class PhraseNotValidException : Exception
     {
@@ -12,12 +8,12 @@ namespace Xchain.net.xchain.thorchain.Exceptions
 
         public PhraseNotValidException(string phrase) : base()
         {
-            this.Phrase = phrase;
+            Phrase = phrase;
         }
 
-        public PhraseNotValidException(string phrase , string message) : base(message)
+        public PhraseNotValidException(string phrase, string message) : base(message)
         {
-            this.Phrase = phrase;
+            Phrase = phrase;
         }
 
 

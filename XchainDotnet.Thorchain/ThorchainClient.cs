@@ -3,27 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text;
+using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 using System.Threading.Tasks;
-using xchain.net.xchain.thorchain;
-using Xchain.net.xchain.client;
-using Xchain.net.xchain.client.Models;
-using Xchain.net.xchain.cosmos.Models;
-using Xchain.net.xchain.cosmos.Models.Address;
-using Xchain.net.xchain.cosmos.Models.Crypto;
-using Xchain.net.xchain.cosmos.Models.RPC;
-using Xchain.net.xchain.cosmos.Models.Tx;
-using Xchain.net.xchain.cosmos.SDK;
-using Xchain.net.xchain.crypto;
-using Xchain.net.xchain.thorchain.Constants;
-using Xchain.net.xchain.thorchain.Exceptions;
-using Xchain.net.xchain.thorchain.Models;
-using Xchain.net.xchain.thorchain.Models.Message;
-
-namespace Xchain.net.xchain.thorchain
+using XchainDotnet.Client;
+using XchainDotnet.Client.Models;
+using XchainDotnet.Cosmos.Models;
+using XchainDotnet.Cosmos.Models.Address;
+using XchainDotnet.Cosmos.Models.Crypto;
+using XchainDotnet.Cosmos.Models.RPC;
+using XchainDotnet.Cosmos.Models.Tx;
+using XchainDotnet.Cosmos.SDK;
+using XchainDotnet.Crypto;
+using XchainDotnet.Thorchain.Constants;
+using XchainDotnet.Thorchain.Exceptions;
+using XchainDotnet.Thorchain.Models;
+using XchainDotnet.Thorchain.Models.Message;
+namespace XchainDotnet.Thorchain
 {
-    public class ThorchainClient : IXchainClient , IThorchianClient , IDisposable
+    public class ThorchainClient : IXchainClient, IThorchianClient, IDisposable
     {
         private string _phrase;
         private string _address;
@@ -31,20 +29,20 @@ namespace Xchain.net.xchain.thorchain
         private Network _network;
         private IPrivateKey _privateKey = null;
 
-        public string Phrase 
+        public string Phrase
         {
-            get => this._phrase;
+            get => _phrase;
             set
             {
-                if (this._phrase != value)
+                if (_phrase != value)
                 {
                     if (!XcahinCrypto.ValidatePhrase(value))
                     {
-                        throw new PhraseNotValidException(value , "Invalid Phrase");
+                        throw new PhraseNotValidException(value, "Invalid Phrase");
                     }
-                    this._phrase = value;
-                    this.PrivateKey = null;
-                    this.Address = string.Empty;
+                    _phrase = value;
+                    PrivateKey = null;
+                    Address = string.Empty;
                 }
             }
         }
@@ -53,79 +51,79 @@ namespace Xchain.net.xchain.thorchain
         {
             get
             {
-                return this._clientUrl;
+                return _clientUrl;
             }
             set
             {
-                this._clientUrl = value;
-                this.ThorClient = new CosmosSdkClient(value.GetByNetwork(this.Network).Node , "thorchain" , ThorchainUtils.GetPrefix(this.Network) , ThorchainConstantValues.DerivePath);
+                _clientUrl = value;
+                ThorClient = new CosmosSdkClient(value.GetByNetwork(Network).Node, "thorchain", ThorchainUtils.GetPrefix(Network), ThorchainConstantValues.DerivePath);
             }
         }
 
         public Network Network
         {
-            get => this._network;
+            get => _network;
             set
             {
-                this._network = value;
-                this.ThorClient = new CosmosSdkClient(this.ClientUrl.GetByNetwork(this.Network).Node, "thorchain", ThorchainUtils.GetPrefix(this.Network), ThorchainConstantValues.DerivePath);
-                this.Address = string.Empty;
+                _network = value;
+                ThorClient = new CosmosSdkClient(ClientUrl.GetByNetwork(Network).Node, "thorchain", ThorchainUtils.GetPrefix(Network), ThorchainConstantValues.DerivePath);
+                Address = string.Empty;
             }
         }
         public CosmosSdkClient ThorClient { get; set; }
         public string Address
         {
-            get => this._address;
+            get => _address;
             set
             {
-                if (string.IsNullOrEmpty(this._address))
+                if (string.IsNullOrEmpty(_address))
                 {
-                    var address = this.ThorClient.GetAddressFromPrivKey(this.PrivateKey);
+                    var address = ThorClient.GetAddressFromPrivKey(PrivateKey);
                     if (string.IsNullOrEmpty(address))
                     {
                         throw new Exception("Address not defined");
                     }
-                    this._address = address;
+                    _address = address;
                 }
             }
         }
         public ExplorerUrl ExplorerUrl { get; set; }
         public IPrivateKey PrivateKey
         {
-            get => this._privateKey;
+            get => _privateKey;
             set
             {
-                if (this._privateKey == null)
+                if (_privateKey == null)
                 {
-                    if (string.IsNullOrEmpty(this._phrase))
+                    if (string.IsNullOrEmpty(_phrase))
                     {
                         throw new Exception("phrase not set");
                     }
-                    this._privateKey = this.ThorClient.GetPrivKeyFromMnemonic(this._phrase);
+                    _privateKey = ThorClient.GetPrivKeyFromMnemonic(_phrase);
                 }
             }
         }
 
-        public ThorchainClient(string phrase , ClientUrl clientUrl , ExplorerUrl explorerUrl , Network network = Network.testnet)
+        public ThorchainClient(string phrase, ClientUrl clientUrl, ExplorerUrl explorerUrl, Network network = Network.testnet)
         {
-            this._network = network;
-            this.ClientUrl = clientUrl ?? ThorchainUtils.GetDefaultClientUrl();
-            this.ExplorerUrl = explorerUrl ?? ThorchainUtils.GetDefaultExplorerUrl();
-            this.ThorClient = new CosmosSdkClient(this.ClientUrl.GetByNetwork(this.Network).Node, "thorchain", ThorchainUtils.GetPrefix(this.Network), ThorchainConstantValues.DerivePath);
+            _network = network;
+            ClientUrl = clientUrl ?? ThorchainUtils.GetDefaultClientUrl();
+            ExplorerUrl = explorerUrl ?? ThorchainUtils.GetDefaultExplorerUrl();
+            ThorClient = new CosmosSdkClient(ClientUrl.GetByNetwork(Network).Node, "thorchain", ThorchainUtils.GetPrefix(Network), ThorchainConstantValues.DerivePath);
 
             if (!string.IsNullOrEmpty(phrase))
             {
-                this.Phrase = phrase;
+                Phrase = phrase;
             }
         }
 
         public async Task<List<Balance>> GetBalance(string address = null, List<Asset> assets = null)
         {
-            var rawBalances = await this.ThorClient.GetBalance(address ?? this.Address);
+            var rawBalances = await ThorClient.GetBalance(address ?? Address);
             var balances = rawBalances.Select(x => new Balance
             {
-               Amount = x.Amount,
-               Asset = string.IsNullOrEmpty(x.Denom) ? ThorchainUtils.GetAsset(x.Denom) : new AssetRune()
+                Amount = x.Amount,
+                Asset = string.IsNullOrEmpty(x.Denom) ? ThorchainUtils.GetAsset(x.Denom) : new AssetRune()
             }).ToList();
 
             if (assets != null && assets.Count > 0)
@@ -138,19 +136,19 @@ namespace Xchain.net.xchain.thorchain
 
         public string GetExplorerAddressUrl(string address)
         {
-            var explorerAddress = $@"{this.ExplorerUrl.GetExplorerUrlByNetwork(this.Network)}/address/{address}";
+            var explorerAddress = $@"{ExplorerUrl.GetExplorerUrlByNetwork(Network)}/address/{address}";
             return explorerAddress;
         }
 
         public string GetExplorerNodeUrl(string node)
         {
-            var explorerNodeUr = $@"{this.ExplorerUrl.GetExplorerUrlByNetwork(this.Network)}/nodes/{node}";
+            var explorerNodeUr = $@"{ExplorerUrl.GetExplorerUrlByNetwork(Network)}/nodes/{node}";
             return explorerNodeUr;
         }
 
         public string GetExplorerTxUrl(string txId)
         {
-            var txUrl = $@"{this.ExplorerUrl.GetExplorerUrlByNetwork(this.Network)}/txs/{txId}";
+            var txUrl = $@"{ExplorerUrl.GetExplorerUrlByNetwork(Network)}/txs/{txId}";
             return txUrl;
         }
 
@@ -163,7 +161,7 @@ namespace Xchain.net.xchain.thorchain
         {
             try
             {
-                var txResult = await this.ThorClient.TxHashGet(txId);
+                var txResult = await ThorClient.TxHashGet(txId);
                 var action = ThorchainUtils.GetTxType(txResult.Data, "hex");
 
                 List<Tx> txs = new List<Tx>();
@@ -176,10 +174,10 @@ namespace Xchain.net.xchain.thorchain
                 }
                 else
                 {
-                    var result = ThorchainUtils.GetTxFromHistory(new List<cosmos.Models.Tx.TxResponse>
+                    var result = ThorchainUtils.GetTxFromHistory(new List<TxResponse>
                     {
                         txResult
-                    }, this.Network);
+                    }, Network);
 
                     txs.AddRange(result);
                 }
@@ -201,7 +199,7 @@ namespace Xchain.net.xchain.thorchain
         {
             try
             {
-                var apiUrl = $"{this.ClientUrl.GetByNetwork(this.Network).Node}/thorchain/tx/{txId}";
+                var apiUrl = $"{ClientUrl.GetByNetwork(Network).Node}/thorchain/tx/{txId}";
                 var response = await GlobalHttpClient.HttpClient.GetAsync(apiUrl);
                 TxResult txResult;
                 if (response.IsSuccessStatusCode)
@@ -255,7 +253,7 @@ namespace Xchain.net.xchain.thorchain
         {
             try
             {
-                var prefix = ThorchainUtils.GetPrefix(this.Network);
+                var prefix = ThorchainUtils.GetPrefix(Network);
                 AccAddress.SetBech32Prefix(
                     prefix,
                     prefix + "pub",
@@ -268,7 +266,7 @@ namespace Xchain.net.xchain.thorchain
                 var args = (TxHistoryParamFilter)txHistoryParams;
 
                 string messageAction = null;
-                var address = args?.Address ?? this.Address;
+                var address = args?.Address ?? Address;
                 var offset = args?.Offset ?? 0;
                 var limit = args?.Limit ?? 10;
                 int? txMinHeight = null;
@@ -276,7 +274,7 @@ namespace Xchain.net.xchain.thorchain
 
                 var txIncomingHistory = (await ThorClient.SearchTxFromRPC(new SearchTxParams
                 {
-                    RpcEndpoint = this.ClientUrl.GetByNetwork(this.Network).RPC,
+                    RpcEndpoint = ClientUrl.GetByNetwork(Network).RPC,
                     MessageAction = messageAction,
                     TransferRecipient = address,
                     Limit = ThorchainConstantValues.MAX_TX_COUNT,
@@ -286,7 +284,7 @@ namespace Xchain.net.xchain.thorchain
 
                 var txOutgoingHistory = (await ThorClient.SearchTxFromRPC(new SearchTxParams
                 {
-                    RpcEndpoint = this.ClientUrl.GetByNetwork(this.Network).RPC,
+                    RpcEndpoint = ClientUrl.GetByNetwork(Network).RPC,
                     MessageAction = messageAction,
                     TransferSender = address,
                     Limit = ThorchainConstantValues.MAX_TX_COUNT,
@@ -359,8 +357,8 @@ namespace Xchain.net.xchain.thorchain
 
         public void PurgeClient()
         {
-            this.Phrase = string.Empty;
-            this.Address = string.Empty;
+            Phrase = string.Empty;
+            Address = string.Empty;
             //this.PrivateKey = null;
         }
 
@@ -368,7 +366,7 @@ namespace Xchain.net.xchain.thorchain
         {
             try
             {
-                var prefix = ThorchainUtils.GetPrefix(this.Network);
+                var prefix = ThorchainUtils.GetPrefix(Network);
                 AccAddress.SetBech32Prefix(
                     prefix,
                     prefix + "pub",
@@ -378,17 +376,17 @@ namespace Xchain.net.xchain.thorchain
                     prefix + "valconspub"
                   );
 
-                var assetBalance = await this.GetBalance(this.Address, new List<Asset> { transferParams.Asset });
-                var fee = await this.GetFees();
-                if (assetBalance.Count == 0 || assetBalance[0].Amount < (transferParams.Amount + fee.Average))
+                var assetBalance = await GetBalance(Address, new List<Asset> { transferParams.Asset });
+                var fee = await GetFees();
+                if (assetBalance.Count == 0 || assetBalance[0].Amount < transferParams.Amount + fee.Average)
                 {
                     throw new InsufficientFunds(assetBalance[0].Amount, "insufficient funds");
                 }
 
-                var transferResult = await this.ThorClient.Transfer(new TransferParams
+                var transferResult = await ThorClient.Transfer(new TransferParams
                 {
-                    PrivKey = this.PrivateKey,
-                    From = this.Address,
+                    PrivKey = PrivateKey,
+                    From = Address,
                     To = transferParams.Recipient,
                     Amount = transferParams.Amount,
                     Asset = ThorchainUtils.GetDenom(transferParams.Asset),
@@ -411,20 +409,20 @@ namespace Xchain.net.xchain.thorchain
             {
                 throw;
             }
-            
+
         }
 
         public async Task<string> Deposit(DepositParam depostiParams)
         {
             try
             {
-                var assetBalance = await this.GetBalance(this.Address, new List<Asset> { depostiParams.Asset });
-                if (assetBalance.Count == 0 || assetBalance[0].Amount < (depostiParams.Amount + ThorchainConstantValues.DEFAULT_GAS_VALUE))
+                var assetBalance = await GetBalance(Address, new List<Asset> { depostiParams.Asset });
+                if (assetBalance.Count == 0 || assetBalance[0].Amount < depostiParams.Amount + ThorchainConstantValues.DEFAULT_GAS_VALUE)
                 {
                     throw new InsufficientFunds(assetBalance[0].Amount, "insufficient funds");
                 }
 
-                var signer = this.Address;
+                var signer = Address;
 
                 var msgNativeTx = MsgNativeTx.MsgNativeFromJson(new List<MsgCoin>
             {
@@ -435,14 +433,14 @@ namespace Xchain.net.xchain.thorchain
                 }
             }, depostiParams.Memo, signer);
 
-                var unsignedStdTx = await this.BuildDepositTx(msgNativeTx);
-                var privateKey = this.PrivateKey;
+                var unsignedStdTx = await BuildDepositTx(msgNativeTx);
+                var privateKey = PrivateKey;
                 var accAddress = AccAddress.FromBech32(signer);
                 var fee = unsignedStdTx.Fee;
 
                 fee.Gas = "10000000";
 
-                var result = await this.ThorClient.SignAndBroadcast(unsignedStdTx, privateKey, accAddress);
+                var result = await ThorClient.SignAndBroadcast(unsignedStdTx, privateKey, accAddress);
                 if (result != null && !string.IsNullOrEmpty(result.Data) && !string.IsNullOrEmpty(result.RawLog) && !string.IsNullOrEmpty(result.GasUsed) && !string.IsNullOrEmpty(result.GasWanted))
                 {
                     return result.TxHash;
@@ -459,7 +457,7 @@ namespace Xchain.net.xchain.thorchain
         {
             try
             {
-                var jsonPostData = JsonSerializer.Serialize(new Dictionary<string,object>
+                var jsonPostData = JsonSerializer.Serialize(new Dictionary<string, object>
                 {
                     ["coins"] = msgNativeTx.Coins,
                     ["memo"] = msgNativeTx.Memo,
@@ -471,7 +469,7 @@ namespace Xchain.net.xchain.thorchain
                 });
 
                 var contentPostData = new StringContent(jsonPostData);
-                var result = await GlobalHttpClient.HttpClient.PostAsync($@"{this.ClientUrl.GetByNetwork(this.Network).Node}/thorchain/deposit", contentPostData);
+                var result = await GlobalHttpClient.HttpClient.PostAsync($@"{ClientUrl.GetByNetwork(Network).Node}/thorchain/deposit", contentPostData);
 
                 ThorchainDepositResponse response;
 
@@ -501,12 +499,12 @@ namespace Xchain.net.xchain.thorchain
 
         public bool ValidateAddress(string address)
         {
-            return this.ThorClient.CheckAddress(address);
+            return ThorClient.CheckAddress(address);
         }
 
         public void Dispose()
         {
-            this.PurgeClient();
+            PurgeClient();
         }
     }
 }

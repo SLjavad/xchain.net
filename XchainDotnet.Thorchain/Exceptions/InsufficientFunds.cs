@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Xchain.net.xchain.thorchain.Exceptions
+namespace XchainDotnet.Thorchain.Exceptions
 {
     public class InsufficientFunds : Exception
     {
@@ -12,12 +8,12 @@ namespace Xchain.net.xchain.thorchain.Exceptions
 
         public InsufficientFunds(decimal amount) : base()
         {
-            this.Amount = amount;
+            Amount = amount;
         }
 
         public InsufficientFunds(decimal amount, string message) : base(message)
         {
-            this.Amount = amount;
+            Amount = amount;
         }
     }
 }

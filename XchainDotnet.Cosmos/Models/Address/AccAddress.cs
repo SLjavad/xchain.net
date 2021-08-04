@@ -1,6 +1,4 @@
-﻿using Bech32;
-using NBitcoin.DataEncoders;
-using System;
+﻿using System;
 using System.Text.Json.Serialization;
 using XchainDotnet.Cosmos.Models.Address.Prefix;
 using XchainDotnet.Cosmos.Models.Crypto;
@@ -17,7 +15,6 @@ namespace XchainDotnet.Cosmos.Models.Address
 
         public string ToBech32()
         {
-            //var words = Bech32Engine.Bytes8to5(this.value);
             var encoded = Bech32Engine.Encode(Bech32Prefix.AccAddr, value);
             return encoded;
         }

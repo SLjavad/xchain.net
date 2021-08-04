@@ -1,15 +1,16 @@
-﻿using dotnetstandard_bip39;
-using NBitcoin;
+﻿using NBitcoin;
 using System;
 using System.Collections.Generic;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
+using XchainDotnet.Client;
 using XchainDotnet.Cosmos.Models;
 using XchainDotnet.Cosmos.Models.Account;
 using XchainDotnet.Cosmos.Models.Address;
 using XchainDotnet.Cosmos.Models.Common;
 using XchainDotnet.Cosmos.Models.Crypto;
+using XchainDotnet.Cosmos.Models.Message;
 using XchainDotnet.Cosmos.Models.Message.Base;
 using XchainDotnet.Cosmos.Models.RPC;
 using XchainDotnet.Cosmos.Models.Tx;
@@ -78,7 +79,7 @@ namespace XchainDotnet.Cosmos.SDK
 
         }
 
-        public async Task<List<Coin>> GetBalance(string address)
+        public async Task<List<Models.Coin>> GetBalance(string address)
         {
             try
             {
@@ -88,7 +89,7 @@ namespace XchainDotnet.Cosmos.SDK
                 var response = await GlobalHttpClient.HttpClient.GetAsync(apiUrl);
                 if (response.IsSuccessStatusCode)
                 {
-                    var result = await response.Content.ReadFromJsonAsync<CommonResponse<List<Coin>>>();
+                    var result = await response.Content.ReadFromJsonAsync<CommonResponse<List<Models.Coin>>>();
                     return result.Result;
                 }
                 return null;
@@ -263,9 +264,9 @@ namespace XchainDotnet.Cosmos.SDK
                     {
                         new MsgSend
                         {
-                            Amount = new List<Coin>
+                            Amount = new List<Models.Coin>
                             {
-                                new Coin
+                                new Models.Coin
                                 {
                                     Amount = transferParams.Amount,
                                     Denom = transferParams.Asset
