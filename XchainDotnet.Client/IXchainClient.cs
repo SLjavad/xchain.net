@@ -10,7 +10,7 @@ namespace XchainDotnet.Client
         string Phrase { get; set; }
         Network Network { get; set; }
         string Address { get; set; }
-        BaseUrl ExplorerUrl { get; set; }
+        ExplorerUrl ExplorerUrl { get; set; }
         // Methods
         string GetExplorerAddressUrl(string address);
         string GetExplorerTxUrl(string txId);

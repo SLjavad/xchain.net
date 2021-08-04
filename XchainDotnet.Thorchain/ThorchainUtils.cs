@@ -2,19 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Xchain.net.xchain.client;
-using Xchain.net.xchain.client.Models;
-using Xchain.net.xchain.cosmos.Models.Address;
-using Xchain.net.xchain.cosmos.Models.Message;
-using Xchain.net.xchain.cosmos.Models.Message.Base;
-using Xchain.net.xchain.cosmos.Models.Tx;
-using Xchain.net.xchain.thorchain.Constants;
-using Xchain.net.xchain.thorchain.Models;
-using Xchain.net.xchain.util;
+using XchainDotnet.Client;
+using XchainDotnet.Client.Models;
+using XchainDotnet.Cosmos.Models.Address;
+using XchainDotnet.Cosmos.Models.Message;
+using XchainDotnet.Cosmos.Models.Message.Base;
+using XchainDotnet.Cosmos.Models.Tx;
+using XchainDotnet.Thorchain.Constants;
+using XchainDotnet.Thorchain.Models;
 
-namespace xchain.net.xchain.thorchain
+namespace XchainDotnet.Thorchain
 {
     public class ThorchainUtils
     {
@@ -66,7 +63,7 @@ namespace xchain.net.xchain.thorchain
 
         public static string GetDenomWithChain(Asset asset)
         {
-            return $"{ChainConst.THORChain}.{asset.Symbol.ToUpperInvariant()}";
+            return $"{Chain.THOR}.{asset.Symbol.ToUpperInvariant()}";
         }
 
         private static byte[] StringToByteArray(string hex)

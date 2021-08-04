@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xchain.net.xchain.client.Models;
+﻿using XchainDotnet.Client.Models;
 
-namespace Xchain.net.xchain.thorchain.Models
+namespace XchainDotnet.Thorchain.Models
 {
     public record AssetRune : Asset
     {
-        public override Chain Chain { get => Chain.THOR;}
+        public override Chain Chain { get => Chain.THOR; }
         public override string Symbol { get => "RUNE"; }
-        public override string Ticker { get => "RUNE";}
+        public override string Ticker { get => "RUNE"; }
     }
 }

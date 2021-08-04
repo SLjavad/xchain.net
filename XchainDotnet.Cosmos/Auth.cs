@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
+using XchainDotnet.Client;
 using XchainDotnet.Cosmos.Models.Crypto;
 using XchainDotnet.Cosmos.Models.Tx;
 using XchainDotnet.Cosmos.SDK;

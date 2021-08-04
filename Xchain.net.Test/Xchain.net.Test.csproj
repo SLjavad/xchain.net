@@ -6,7 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\xchain.net\Xchain.net.csproj" />
+    <ProjectReference Include="..\XchainDotnet.Cosmos\XchainDotnet.Cosmos.csproj" />
+    <ProjectReference Include="..\XchainDotnet.Thorchain\XchainDotnet.Thorchain.csproj" />
   </ItemGroup>
 
 </Project>

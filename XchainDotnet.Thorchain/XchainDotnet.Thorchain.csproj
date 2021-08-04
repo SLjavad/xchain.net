@@ -4,4 +4,9 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\XchainDotnet.Cosmos\XchainDotnet.Cosmos.csproj" />
+    <ProjectReference Include="..\XchainDotnet.Crypto\XchainDotnet.Crypto.csproj" />
+  </ItemGroup>
+
 </Project>

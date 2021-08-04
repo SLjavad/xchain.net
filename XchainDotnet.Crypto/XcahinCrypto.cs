@@ -1,12 +1,7 @@
 ﻿using dotnetstandard_bip39;
 using NBitcoin;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Xchain.net.xchain.crypto
+namespace XchainDotnet.Crypto
 {
     public class XcahinCrypto
     {

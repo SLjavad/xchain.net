@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using Xchain.net.xchain.client.Models;
+﻿using System.Text.Json.Serialization;
+using XchainDotnet.Client.Models;
 
-namespace Xchain.net.xchain.thorchain.Models
+namespace XchainDotnet.Thorchain.Models
 {
     public class DepositParam
     {

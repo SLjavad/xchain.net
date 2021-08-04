@@ -23,13 +23,20 @@ namespace Xchain.net.xchain.cosmos.Models.Address
         public string ToBech32()
         {
             //var words = Bech32Engine.Bytes8to5(this.value);
-            var encoded = Bech32Engine.Encode(Bech32Prefix.AccAddr, this.value);
-            return encoded;
+            try
+            {
+                var encoded = Bech32Engine.Encode(Bech32Prefix.AccAddr, this.value);
+                return encoded;
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public static AccAddress FromBech32(string accAddress)
         {
-
             Bech32Engine.Decode(accAddress, out string hrp, out byte[] data);
             if (data == null)
             {
