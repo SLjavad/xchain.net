@@ -1,9 +1,9 @@
 using System;
 using Xunit;
 
-namespace XchainDotnet.Crypto.Test
+namespace XchainDotnet.Thorchain.Tests
 {
-    public class UnitTest1
+    public class XchainThorchainTest
     {
         [Fact]
         public void Test1()

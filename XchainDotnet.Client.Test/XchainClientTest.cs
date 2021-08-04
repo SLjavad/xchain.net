@@ -3,7 +3,7 @@ using Xunit;
 
 namespace XchainDotnet.Client.Test
 {
-    public class UnitTest1
+    public class XchainClientTest
     {
         [Fact]
         public void Test1()
