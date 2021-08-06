@@ -26,6 +26,12 @@ namespace XchainDotnet.Client
                 }
                 return _httpClient;
             }
+            set
+            {
+                //just for using in unit tests , but you can set your custom httpClient
+                //it's better to use httpClientFactory client and don't set by yourself.
+                _httpClient = value;
+            }
         }
     }
 }

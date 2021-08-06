@@ -233,7 +233,7 @@ namespace XchainDotnet.Cosmos.SDK
                     }
                     else
                     {
-                        account = BaseAccount.FromJson((response.Result as BaseAccountResponse).Value);
+                        account = BaseAccount.FromJson((response.Result as BaseAccountResponse).Value); //TODO: change to Aminowrapper
                     }
                 }
 
