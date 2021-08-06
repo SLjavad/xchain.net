@@ -18,6 +18,11 @@ namespace XchainDotnet.Cosmos.Test
             this.sdkClientFixture = sdkClientFixture;
         }
 
+        private void MockHttpClient()
+        {
+
+        }
+
         [Fact]
         public void Get_Address_from_PrivKey()
         {
@@ -32,6 +37,22 @@ namespace XchainDotnet.Cosmos.Test
 
             privKey = sdkClientFixture.ThorTestnetClient.GetPrivKeyFromMnemonic(thorPhrase);
             Assert.Equal(thorTestnetAddress, sdkClientFixture.ThorTestnetClient.GetAddressFromPrivKey(privKey));
+        }
+
+        [Fact]
+        public void CheckAddress()
+        {
+            Assert.True(sdkClientFixture.CosmosMainnetClient.CheckAddress(cosmosAddress));
+            Assert.True(sdkClientFixture.CosmosTestnetClient.CheckAddress(cosmosAddress));
+            Assert.False(sdkClientFixture.CosmosMainnetClient.CheckAddress("thor19kacmmyuf2ysyvq3t9nrl9495l5cvktjs0yfws"));
+            Assert.False(sdkClientFixture.CosmosTestnetClient.CheckAddress("tthor19kacmmyuf2ysyvq3t9nrl9495l5cvktj5c4eh4"));
+
+            Assert.True(sdkClientFixture.ThorMainnetClient.CheckAddress("thor19kacmmyuf2ysyvq3t9nrl9495l5cvktjs0yfws"));
+            Assert.True(sdkClientFixture.ThorTestnetClient.CheckAddress("tthor19kacmmyuf2ysyvq3t9nrl9495l5cvktj5c4eh4"));
+            Assert.False(sdkClientFixture.ThorMainnetClient.CheckAddress(cosmosAddress));
+            Assert.False(sdkClientFixture.ThorTestnetClient.CheckAddress(cosmosAddress));
+            Assert.False(sdkClientFixture.ThorMainnetClient.CheckAddress("tthor19kacmmyuf2ysyvq3t9nrl9495l5cvktj5c4eh4"));
+            Assert.False(sdkClientFixture.ThorTestnetClient.CheckAddress("thor19kacmmyuf2ysyvq3t9nrl9495l5cvktjs0yfws"));
         }
     }
 }
