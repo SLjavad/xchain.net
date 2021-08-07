@@ -9,10 +9,15 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using XchainDotnet.Client;
+using XchainDotnet.Cosmos.Models;
 using XchainDotnet.Cosmos.Models.Account;
+using XchainDotnet.Cosmos.Models.Address;
 using XchainDotnet.Cosmos.Models.Common;
+using XchainDotnet.Cosmos.Models.Message;
+using XchainDotnet.Cosmos.Models.Message.Base;
 using XchainDotnet.Cosmos.Models.Tx;
 using XchainDotnet.Cosmos.Test.Fixture;
+using XchainDotnet.Cosmos.Utils.JsonConverters;
 using Xunit;
 
 namespace XchainDotnet.Cosmos.Test
@@ -30,23 +35,29 @@ namespace XchainDotnet.Cosmos.Test
         {
             this.sdkClientFixture = sdkClientFixture;
         }
-
-        private HttpClient MockHttpClient(Dictionary<Expression<Func<HttpRequestMessage,bool>> ,
-            HttpResponseMessage> mocks,
-            Expression<Func<HttpRequestMessage, bool>> verifiers = null)
+        BroadcastTxParams txPost;
+        private Mock<HttpMessageHandler> MockHttpClient(Dictionary<Expression<Func<HttpRequestMessage,bool>> ,
+            HttpResponseMessage> mocks)
         {
             var mock = new Mock<HttpMessageHandler>();
             foreach (var item in mocks)
             {
                 mock.Protected()
-                    .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is(item.Key), ItExpr.IsAny<CancellationToken>()).ReturnsAsync(item.Value);
+                    .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is(item.Key), ItExpr.IsAny<CancellationToken>())
+                    .Callback<HttpRequestMessage, CancellationToken>(
+                        (httpRequestMessage, cancellationToken) =>
+                        {
+                            if (httpRequestMessage.Method == HttpMethod.Post)
+                            {
+                                txPost = httpRequestMessage.Content
+                                    .ReadFromJsonAsync<BroadcastTxParams>()
+                                    .GetAwaiter()
+                                    .GetResult();
+                            }
+                        })
+                    .ReturnsAsync(item.Value);
             }
-            if (verifiers != null)
-            {
-                mock.Protected().Verify("SendAsync", Times.AtLeastOnce(), ItExpr.Is(verifiers));
-            }
-            var httpClient = new HttpClient(mock.Object);
-            return httpClient;
+            return mock;
         }
 
         [Fact]
@@ -103,7 +114,7 @@ namespace XchainDotnet.Cosmos.Test
 
             var httpClient = MockHttpClient(mocks);
 
-            GlobalHttpClient.HttpClient = httpClient;
+            GlobalHttpClient.HttpClient = new HttpClient(httpClient.Object);
 
             var res = await sdkClientFixture.CosmosMainnetClient.GetBalance(cosmosAddress);
             Assert.True(res.Count == 0);
@@ -137,7 +148,7 @@ namespace XchainDotnet.Cosmos.Test
 
             httpClient = MockHttpClient(mocks);
 
-            GlobalHttpClient.HttpClient = httpClient;
+            GlobalHttpClient.HttpClient = new HttpClient(httpClient.Object);
 
             res = await sdkClientFixture.CosmosTestnetClient.GetBalance("cosmos1gehrq0pr5d79q8nxnaenvqh09g56jafm82thjv");
             Assert.Equal(75000000, res[0].Amount);
@@ -172,7 +183,7 @@ namespace XchainDotnet.Cosmos.Test
 
             httpClient = MockHttpClient(mocks);
 
-            GlobalHttpClient.HttpClient = httpClient;
+            GlobalHttpClient.HttpClient = new HttpClient(httpClient.Object);
 
             res = await sdkClientFixture.ThorMainnetClient.GetBalance(thorMainnetAddress);
             Assert.Single(res);
@@ -202,7 +213,7 @@ namespace XchainDotnet.Cosmos.Test
 
             httpClient = MockHttpClient(mocks);
 
-            GlobalHttpClient.HttpClient = httpClient;
+            GlobalHttpClient.HttpClient = new HttpClient(httpClient.Object);
 
             res = await sdkClientFixture.ThorTestnetClient.GetBalance(thorTestnetAddress);
             Assert.True(res.Count == 0);
@@ -232,7 +243,7 @@ namespace XchainDotnet.Cosmos.Test
                         new Models.Coin
                         {
                             Amount = 21000,
-                            Denom = "muon"
+                            Denom = "thor"
                         }
                     }
                 }
@@ -243,7 +254,7 @@ namespace XchainDotnet.Cosmos.Test
                 {
                     x =>
                         x.Method == HttpMethod.Get
-                        && x.RequestUri.OriginalString == $"{sdkClientFixture.CosmosTestnetClient.server}/auth/accounts/{cosmosAddress}",
+                        && x.RequestUri.OriginalString == $"{sdkClientFixture.ThorTestnetClient.server}/auth/accounts/{thorTestnetAddress}",
                     new HttpResponseMessage
                     {
                         Content = new StringContent(tempres)
@@ -253,26 +264,73 @@ namespace XchainDotnet.Cosmos.Test
 
             mocks.Add(x =>
                        x.Method == HttpMethod.Post
-                       && x.RequestUri.OriginalString == $"{sdkClientFixture.CosmosTestnetClient.server}/txs"
+                       && x.RequestUri.OriginalString == $"{sdkClientFixture.ThorTestnetClient.server}/txs"
                        , new HttpResponseMessage
                        {
                            Content = new StringContent(expectedTxsPostResult)
                        });
 
+
+
             var httpClient = MockHttpClient(mocks);
 
-            GlobalHttpClient.HttpClient = httpClient;
+            GlobalHttpClient.HttpClient = new HttpClient(httpClient.Object);
 
-            var res = await sdkClientFixture.CosmosTestnetClient.Transfer(new TransferParams
+            var res = await sdkClientFixture.ThorTestnetClient.Transfer(new TransferParams
             {
                 Amount = 10000,
-                Asset = "muon",
-                PrivKey = sdkClientFixture.CosmosTestnetClient.GetPrivKeyFromMnemonic(cosmosPhrase),
-                From = cosmosAddress,
-                To = "cosmos1gehrq0pr5d79q8nxnaenvqh09g56jafm82thjv",
+                Asset = "thor",
+                PrivKey = sdkClientFixture.ThorTestnetClient.GetPrivKeyFromMnemonic(thorPhrase),
+                From = thorTestnetAddress,
+                To = "tthor19kacmmyuf2ysyvq3t9nrl9495l5cvktj5c4eh4",
                 Memo = "transfer"
             });
-            Assert.Equal(expected, res);
+            var broadcastTxParams = new BroadcastTxParams()
+            {
+                Tx = new StdTx
+                {
+                    Memo = "transfer",
+                    Msg = new List<Msg>
+                    {
+                        new AminoWrapper<MsgSend>
+                        {
+                            Type = "thorchain/MsgSend",
+                            Value = new MsgSend
+                            {
+                                Amount = new List<Coin>
+                                {
+                                    new Coin
+                                    {
+                                        Amount = 10000,
+                                        Denom = "thor"
+                                    }
+                                },
+                                FromAddress = AccAddress.FromBech32(thorTestnetAddress),
+                                ToAddress = AccAddress.FromBech32("tthor19kacmmyuf2ysyvq3t9nrl9495l5cvktj5c4eh4")
+                            }
+                        }
+                    }
+                }
+            };
+
+            var serialized = JsonSerializer.Serialize(broadcastTxParams, new JsonSerializerOptions
+            {
+                Converters =
+                {
+                    new MsgSendNumToStringConverter()
+                }
+            });
+            //httpClient.Protected().Verify("SendAsync", Times.AtLeastOnce(), ItExpr.Is<HttpRequestMessage>(x => x.Method == HttpMethod.Post 
+            //    && x.Content.ReadAsStringAsync().Result != null),
+            //    ItExpr.IsAny<CancellationToken>());
+            Assert.Equal(JsonSerializer.Serialize(expected), JsonSerializer.Serialize(res));
+            Assert.Single(txPost.Tx.Msg);
+            Assert.Equal("transfer", txPost.Tx.Memo);
+            Assert.Equal(thorTestnetAddress, ((AminoWrapper<MsgSend>)txPost.Tx.Msg[0]).Value.FromAddress.ToBech32());
+            Assert.Equal("tthor19kacmmyuf2ysyvq3t9nrl9495l5cvktj5c4eh4", ((AminoWrapper<MsgSend>)txPost.Tx.Msg[0]).Value.FromAddress.ToBech32());
+            Assert.Equal(10000, ((AminoWrapper<MsgSend>)txPost.Tx.Msg[0]).Value.Amount[0].Amount);
+            Assert.Equal("thor", ((AminoWrapper<MsgSend>)txPost.Tx.Msg[0]).Value.Amount[0].Denom);
+            Assert.Equal("thorchain/MsgSend", ((AminoWrapper<MsgSend>)txPost.Tx.Msg[0]).Type);
         }
 
     }
