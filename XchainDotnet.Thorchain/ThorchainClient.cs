@@ -65,15 +65,14 @@ namespace XchainDotnet.Thorchain
             set
             {
                 _network = value;
-                ThorClient = new CosmosSdkClient(ClientUrl.GetByNetwork(Network).Node, "thorchain", ThorchainUtils.GetPrefix(Network), ThorchainConstantValues.DerivePath);
+                ThorClient = new CosmosSdkClient(ClientUrl.GetByNetwork(_network).Node, "thorchain", ThorchainUtils.GetPrefix(_network), ThorchainConstantValues.DerivePath);
                 Address = string.Empty;
             }
         }
         public CosmosSdkClient ThorClient { get; set; }
         public string Address
         {
-            get => _address;
-            set
+            get 
             {
                 if (string.IsNullOrEmpty(_address))
                 {
@@ -84,6 +83,11 @@ namespace XchainDotnet.Thorchain
                     }
                     _address = address;
                 }
+                return _address;
+            }
+            set
+            {
+                _address = value;
             }
         }
         public ExplorerUrl ExplorerUrl { get; set; }
