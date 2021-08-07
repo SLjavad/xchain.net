@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 using System.Threading.Tasks;
 using XchainDotnet.Client;
@@ -36,7 +35,7 @@ namespace XchainDotnet.Thorchain
             {
                 if (_phrase != value)
                 {
-                    if (!XcahinCrypto.ValidatePhrase(value))
+                    if (!XchainCrypto.ValidatePhrase(value))
                     {
                         throw new PhraseNotValidException(value, "Invalid Phrase");
                     }
