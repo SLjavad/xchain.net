@@ -333,5 +333,67 @@ namespace XchainDotnet.Cosmos.Test
             Assert.Equal("thorchain/MsgSend", ((AminoWrapper<MsgSend>)txPost.Tx.Msg[0]).Type);
         }
 
+        [Fact]
+        public async Task Get_Transaction_Data()
+        {
+            sdkClientFixture.ThorTestnetClient.SetPrefix();
+            var hash = "19BFC1E8EBB10AA1EC6B82E380C6F5FD349D367737EA8D55ADB4A24F0F7D1066";
+            var tempres = JsonSerializer.Serialize(new TxResponse
+            {
+                Data = "0A090A076465706F736974",
+                GasUsed = "148996",
+                GasWanted = "5000000000000000",
+                Height = 1047,
+                RawLog = "transaction logs",
+                TimeStamp = "2020-09-25T06:09:15Z",
+                TxHash = "19BFC1E8EBB10AA1EC6B82E380C6F5FD349D367737EA8D55ADB4A24F0F7D1066",
+                Tx = new RawTxResponse
+                {
+                    Body = new Body
+                    {
+                        Messages = new List<Msg>
+                        {
+                            new AminoWrapper<MsgSend>
+                            {
+                                Type = "thorchain/MsgSend",
+                                Value = new MsgSend
+                                {
+                                    Amount = new List<Coin>
+                                    {
+                                        new Coin
+                                        {
+                                            Amount = 1000000,
+                                            Denom = "thor"
+                                        }
+                                    },
+                                    FromAddress = AccAddress.FromBech32("thor19kacmmyuf2ysyvq3t9nrl9495l5cvktjs0yfws"),
+                                    ToAddress = AccAddress.FromBech32("thor19kacmmyuf2ysyvq3t9nrl9495l5cvktjs0yfws")
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            var mocks = new Dictionary<Expression<Func<HttpRequestMessage, bool>>, HttpResponseMessage>
+            {
+                {
+                    x =>
+                        x.Method == HttpMethod.Get
+                        && x.RequestUri.OriginalString == $"{sdkClientFixture.ThorTestnetClient.server}/txs/{hash}",
+                    new HttpResponseMessage
+                    {
+                        Content = new StringContent(tempres)
+                    }
+                }
+            };
+
+            var httpMock = MockHttpClient(mocks);
+            GlobalHttpClient.HttpClient = new HttpClient(httpMock.Object);
+
+            var tx = await sdkClientFixture.ThorTestnetClient.TxHashGet("19BFC1E8EBB10AA1EC6B82E380C6F5FD349D367737EA8D55ADB4A24F0F7D1066");
+            var txString = JsonSerializer.Serialize(tx);
+            Assert.Equal(tempres, txString);
+        }
+
     }
 }
