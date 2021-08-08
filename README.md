@@ -9,7 +9,12 @@ Xchain.net is a library with a common interface for multiple blockchains, built 
 - [Secp256k1.Net](https://github.com/MeadowSuite/Secp256k1.Net)
 - [dotnetstandard-bip39](https://github.com/elucidsoft/dotnetstandard-bip39)
 
-## NOTE
+#### ATTENTION
+**All Xchain.net modules Are under `XchainDotnet` Namespace , so if you faced with multiple objects with different namespaces , choose `XchainDotnet` one**
+
+for example: `Coin` class can be found in `XchainDotnet` and `NBitcoin` namespaces , so you should use `XchainDotnet` one :)
+
+#### NOTE
 **This library currently supports `Thorchain` and is under develop to support other chains.**
 
 **current modules are designed to implement `Thorchain`.**
