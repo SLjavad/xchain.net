@@ -8,9 +8,9 @@ namespace XchainDotnet.Client.Models
         [JsonPropertyName("address")]
         public string Address { get; set; }
         [JsonPropertyName("offset")]
-        public int Offset { get; set; }
+        public int? Offset { get; set; }
         [JsonPropertyName("limit")]
-        public int Limit { get; set; }
+        public int? Limit { get; set; }
         [JsonPropertyName("startTime")]
         public DateTime StartTime { get; set; }
         [JsonPropertyName("asset")]

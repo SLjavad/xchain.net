@@ -182,7 +182,9 @@ namespace XchainDotnet.Cosmos.SDK
                 RPCResponse<RPCTxSearchResult> rpcResponse = null;
                 if (response.IsSuccessStatusCode)
                 {
-                    rpcResponse = await response.Content.ReadFromJsonAsync<RPCResponse<RPCTxSearchResult>>();
+                    var rpcResponseString = await response.Content.ReadAsStringAsync();
+                    rpcResponse = JsonSerializer.Deserialize<RPCResponse<RPCTxSearchResult>>(rpcResponseString);
+                    //rpcResponse = await response.Content.ReadFromJsonAsync<RPCResponse<RPCTxSearchResult>>();
                 }
                 else
                 {
