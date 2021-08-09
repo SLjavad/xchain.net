@@ -2,7 +2,7 @@
 
 namespace XchainDotnet.Thorchain.Models
 {
-    public record AssetRune : Asset
+    public class AssetRune : Asset
     {
         public override Chain Chain { get => Chain.THOR; }
         public override string Symbol { get => "RUNE"; }

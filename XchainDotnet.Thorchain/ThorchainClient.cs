@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
 using XchainDotnet.Client;
@@ -207,7 +206,8 @@ namespace XchainDotnet.Thorchain
                 TxResult txResult;
                 if (response.IsSuccessStatusCode)
                 {
-                    txResult = await response.Content.ReadFromJsonAsync<TxResult>();
+                    var resString = await response.Content.ReadAsStringAsync();
+                    txResult = JsonSerializer.Deserialize<TxResult>(resString);
                 }
                 else
                 {
@@ -478,7 +478,8 @@ namespace XchainDotnet.Thorchain
 
                 if (result.IsSuccessStatusCode)
                 {
-                    response = await result.Content.ReadFromJsonAsync<ThorchainDepositResponse>();
+                    var resString = await result.Content.ReadAsStringAsync();
+                    response = JsonSerializer.Deserialize<ThorchainDepositResponse>(resString);
                 }
                 else
                 {

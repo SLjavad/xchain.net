@@ -1,7 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Version>0.0.1</Version>
+    <LangVersion>9.0</LangVersion>
+    <Authors>SLjavad</Authors>
+    <Description>Thorchain Module for XchainDotnet Clients</Description>
+    <PackageTags>Xchain.net;XchainDotnet;Xchain.net.thorchain;XchainDotnet.thorchain;thorchain</PackageTags>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/SLjavad/xchain.net</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/SLjavad/xchain.net</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>

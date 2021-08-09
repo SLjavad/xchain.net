@@ -2,7 +2,7 @@
 
 namespace XchainDotnet.Client.Models
 {
-    public record Asset
+    public class Asset
     {
         [JsonPropertyName("chain")]
         public virtual Chain Chain { get; set; }

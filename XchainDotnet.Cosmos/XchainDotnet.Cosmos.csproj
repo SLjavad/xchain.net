@@ -1,7 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Version>0.0.1</Version>
+    <LangVersion>9.0</LangVersion>
+    <Authors>SLjavad</Authors>
+    <Description>Cosmos Module for XchainDotnet Clients</Description>
+    <PackageTags>Xchain.net;XchainDotnet;Xchain.net.cosmos;XchainDotnet.cosmos;thorchain</PackageTags>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/SLjavad/xchain.net</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/SLjavad/xchain.net</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +23,7 @@
     <PackageReference Include="Cryptography.ECDSA.Secp256K1" Version="1.1.3" />
     <PackageReference Include="NBitcoin" Version="6.0.6" />
     <PackageReference Include="Secp256k1.Net" Version="0.1.55" />
+    <PackageReference Include="System.Text.Json" Version="5.0.2" />
   </ItemGroup>
 
   <ItemGroup>

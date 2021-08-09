@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
 using XchainDotnet.Client;
@@ -55,7 +54,8 @@ namespace XchainDotnet.Cosmos
                 var response = await GlobalHttpClient.HttpClient.PostAsync(url, dataToPost);
                 if (response.IsSuccessStatusCode)
                 {
-                    var result = await response.Content.ReadFromJsonAsync<BroadcastTxCommitResult>();
+                    var resString = await response.Content.ReadAsStringAsync();
+                    var result = JsonSerializer.Deserialize<BroadcastTxCommitResult>(resString);
                     return result;
                 }
                 else

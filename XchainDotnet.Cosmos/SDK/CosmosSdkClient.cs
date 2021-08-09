@@ -1,7 +1,6 @@
 ﻿using NBitcoin;
 using System;
 using System.Collections.Generic;
-using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
 using XchainDotnet.Client;
@@ -89,7 +88,8 @@ namespace XchainDotnet.Cosmos.SDK
                 var response = await GlobalHttpClient.HttpClient.GetAsync(apiUrl);
                 if (response.IsSuccessStatusCode)
                 {
-                    var result = await response.Content.ReadFromJsonAsync<CommonResponse<List<Models.Coin>>>();
+                    var resString = await response.Content.ReadAsStringAsync();
+                    var result = JsonSerializer.Deserialize<CommonResponse<List<Models.Coin>>>(resString);
                     return result.Result;
                 }
                 return null;
@@ -113,7 +113,8 @@ namespace XchainDotnet.Cosmos.SDK
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var result = await response.Content.ReadFromJsonAsync<TxResponse>();
+                    var resString = await response.Content.ReadAsStringAsync();
+                    var result = JsonSerializer.Deserialize<TxResponse>(resString);
                     return result;
                 }
                 else
@@ -216,7 +217,8 @@ namespace XchainDotnet.Cosmos.SDK
                 var result = await GlobalHttpClient.HttpClient.GetAsync(url);
                 if (result.IsSuccessStatusCode)
                 {
-                    var response = await result.Content.ReadFromJsonAsync<CommonResponse<object>>();
+                    var resString = await result.Content.ReadAsStringAsync();
+                    var response = JsonSerializer.Deserialize<CommonResponse<object>>(resString);
                     if (response.Result is JsonElement jsonElement)
                     {
                         if (jsonElement.TryGetProperty("account_number", out _))
