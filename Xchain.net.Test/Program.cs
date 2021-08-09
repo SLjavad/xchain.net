@@ -35,7 +35,7 @@ namespace Xchain.net.Test
         {
             string mnemonic = "rural bright ball negative already grass good grant nation screen model pizza";
             var thorClient = new ThorchainClient(mnemonic, null, null, Network.testnet);
-            var res = await thorClient.GetTranasctionData("2124A10D60D1AD15CCAC19F0BE1221929168A1C27E9A9CA0DA2A757610AC1C8B");
+            var res = await thorClient.GetTranasctionData("DFEC1DC8ED2F7D5C2578E31E8D58B53688080097EF6806766D3074851E6C25A9");
             Console.WriteLine(res);
         }
 
@@ -80,14 +80,14 @@ namespace Xchain.net.Test
             var result = await client.GetTransactions(new TxHistoryParamFilter
             {
                 Address = address,
-                Limit = 1
+                Limit = 10
             });
             Console.WriteLine(result);
         }
 
         static void Main(string[] args)
         {
-            TestgetTransactionData();
+            TestDeposit();
             Console.ReadKey();
         }
     }

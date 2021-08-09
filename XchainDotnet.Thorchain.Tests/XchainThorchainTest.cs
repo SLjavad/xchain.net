@@ -222,7 +222,7 @@ namespace XchainDotnet.Thorchain.Tests
                 {
                     new Coin
                     {
-                        Amount = 100,
+                        Amount = "100",
                         Denom = "rune"
                     }
                 }
@@ -416,7 +416,7 @@ namespace XchainDotnet.Thorchain.Tests
                 Data = "0A060A0473656E64",
                 GasUsed = "35000",
                 GasWanted = "200000",
-                Height = 0,
+                Height = "0",
                 RawLog = "",
                 TimeStamp = DateTime.Now.ToString(),
                 TxHash = "098E70A9529AC8F1A57AA0FE65D1D13040B0E803AB8BE7F3B32098164009DED3",
@@ -433,7 +433,7 @@ namespace XchainDotnet.Thorchain.Tests
                                     {
                                         new Coin
                                         {
-                                            Amount = 100000000,
+                                            Amount = "100000000",
                                             Denom = "rune"
                                         }
                                     },
@@ -496,7 +496,7 @@ namespace XchainDotnet.Thorchain.Tests
                 CheckTxResult = new CheckTxResult(),
                 DeliverTxResult = new DeliverTxResult(),
                 TxHash = "EA2FAC9E82290DCB9B1374B4C95D7C4DD8B9614A96FACD38031865EB1DBAE24D",
-                Height = 0,
+                Height = "0",
                 Logs = new List<object>()
             };
             var expectedTxsPostResult = JsonSerializer.Serialize(expected);
@@ -512,7 +512,7 @@ namespace XchainDotnet.Thorchain.Tests
                     {
                         new Coin
                         {
-                            Amount = 210000000,
+                            Amount = "210000000",
                             Denom = "rune"
                         }
                     }
@@ -540,7 +540,7 @@ namespace XchainDotnet.Thorchain.Tests
                 {
                     new Coin
                     {
-                        Amount = 210000000,
+                        Amount = "210000000",
                         Denom = "rune"
                     }
                 }
@@ -584,7 +584,7 @@ namespace XchainDotnet.Thorchain.Tests
             Assert.Equal("transfer", txsPost.Tx.Memo);
             Assert.Equal(testnetAddress, ((AminoWrapper<MsgSend>)txsPost.Tx.Msg[0]).Value.FromAddress.ToBech32());
             Assert.Equal("tthor19kacmmyuf2ysyvq3t9nrl9495l5cvktj5c4eh4", ((AminoWrapper<MsgSend>)txsPost.Tx.Msg[0]).Value.FromAddress.ToBech32());
-            Assert.Equal(10000, ((AminoWrapper<MsgSend>)txsPost.Tx.Msg[0]).Value.Amount[0].Amount);
+            Assert.Equal("10000", ((AminoWrapper<MsgSend>)txsPost.Tx.Msg[0]).Value.Amount[0].Amount);
             Assert.Equal("rune", ((AminoWrapper<MsgSend>)txsPost.Tx.Msg[0]).Value.Amount[0].Denom);
             Assert.Equal("thorchain/MsgSend", ((AminoWrapper<MsgSend>)txsPost.Tx.Msg[0]).Type);
         }
@@ -601,7 +601,7 @@ namespace XchainDotnet.Thorchain.Tests
                 CheckTxResult = new CheckTxResult(),
                 DeliverTxResult = new DeliverTxResult(),
                 TxHash = "EA2FAC9E82290DCB9B1374B4C95D7C4DD8B9614A96FACD38031865EB1DBAE24D",
-                Height = 0,
+                Height = "0",
                 Logs = new List<object>(),
                 Data = "data",
                 GasUsed = "gasused",
@@ -621,7 +621,7 @@ namespace XchainDotnet.Thorchain.Tests
                     {
                         new Coin
                         {
-                            Amount = 210000000,
+                            Amount = "210000000",
                             Denom = "rune"
                         }
                     }
@@ -649,7 +649,7 @@ namespace XchainDotnet.Thorchain.Tests
                 {
                     new Coin
                     {
-                        Amount = 210000000,
+                        Amount = "210000000",
                         Denom = "rune"
                     }
                 }
@@ -742,7 +742,7 @@ namespace XchainDotnet.Thorchain.Tests
                 Data = "0A060A0473656E64",
                 GasUsed = "35000",
                 GasWanted = "200000",
-                Height = 0,
+                Height = "0",
                 RawLog = "",
                 TimeStamp = DateTime.Now.ToString(),
                 TxHash = "19BFC1E8EBB10AA1EC6B82E380C6F5FD349D367737EA8D55ADB4A24F0F7D1066",
@@ -759,7 +759,7 @@ namespace XchainDotnet.Thorchain.Tests
                                     {
                                         new Coin
                                         {
-                                            Amount = 100000000,
+                                            Amount = "100000000",
                                             Denom = "rune"
                                         }
                                     },

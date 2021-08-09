@@ -124,7 +124,7 @@ namespace XchainDotnet.Thorchain
             var rawBalances = await ThorClient.GetBalance(address ?? Address);
             var balances = rawBalances.Select(x => new Balance
             {
-                Amount = x.Amount,
+                Amount = decimal.Parse(x.Amount),
                 Asset = string.IsNullOrEmpty(x.Denom) ? ThorchainUtils.GetAsset(x.Denom) : new AssetRune()
             }).ToList();
 

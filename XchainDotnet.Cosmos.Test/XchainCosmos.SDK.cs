@@ -128,7 +128,7 @@ namespace XchainDotnet.Cosmos.Test
                 {
                     new Models.Coin
                     {
-                        Amount = 75000000,
+                        Amount = "75000000",
                         Denom = "umuon"
                     }
                 }
@@ -151,7 +151,7 @@ namespace XchainDotnet.Cosmos.Test
             GlobalHttpClient.HttpClient = new HttpClient(httpClient.Object);
 
             res = await sdkClientFixture.CosmosTestnetClient.GetBalance("cosmos1gehrq0pr5d79q8nxnaenvqh09g56jafm82thjv");
-            Assert.Equal(75000000, res[0].Amount);
+            Assert.Equal("75000000", res[0].Amount);
             Assert.Equal("umuon", res[0].Denom);
 
             // ============================================
@@ -163,7 +163,7 @@ namespace XchainDotnet.Cosmos.Test
                 {
                     new Models.Coin
                     {
-                        Amount = 100,
+                        Amount = "100",
                         Denom = "thor"
                     }
                 }
@@ -188,7 +188,7 @@ namespace XchainDotnet.Cosmos.Test
             res = await sdkClientFixture.ThorMainnetClient.GetBalance(thorMainnetAddress);
             Assert.Single(res);
             Assert.Equal("thor", res[0].Denom);
-            Assert.Equal(100, res[0].Amount);
+            Assert.Equal("100", res[0].Amount);
 
             // ==============================================
 
@@ -227,7 +227,7 @@ namespace XchainDotnet.Cosmos.Test
                 CheckTxResult = new CheckTxResult(),
                 DeliverTxResult = new DeliverTxResult(),
                 TxHash = "EA2FAC9E82290DCB9B1374B4C95D7C4DD8B9614A96FACD38031865EB1DBAE24D",
-                Height = 0
+                Height = "0"
             };
             var expectedTxsPostResult = JsonSerializer.Serialize(expected);
 
@@ -242,7 +242,7 @@ namespace XchainDotnet.Cosmos.Test
                     {
                         new Models.Coin
                         {
-                            Amount = 21000,
+                            Amount = "21000",
                             Denom = "thor"
                         }
                     }
@@ -301,7 +301,7 @@ namespace XchainDotnet.Cosmos.Test
                                 {
                                     new Coin
                                     {
-                                        Amount = 10000,
+                                        Amount = "10000",
                                         Denom = "thor"
                                     }
                                 },
@@ -328,7 +328,7 @@ namespace XchainDotnet.Cosmos.Test
             Assert.Equal("transfer", txPost.Tx.Memo);
             Assert.Equal(thorTestnetAddress, ((AminoWrapper<MsgSend>)txPost.Tx.Msg[0]).Value.FromAddress.ToBech32());
             Assert.Equal("tthor19kacmmyuf2ysyvq3t9nrl9495l5cvktj5c4eh4", ((AminoWrapper<MsgSend>)txPost.Tx.Msg[0]).Value.FromAddress.ToBech32());
-            Assert.Equal(10000, ((AminoWrapper<MsgSend>)txPost.Tx.Msg[0]).Value.Amount[0].Amount);
+            Assert.Equal("10000", ((AminoWrapper<MsgSend>)txPost.Tx.Msg[0]).Value.Amount[0].Amount);
             Assert.Equal("thor", ((AminoWrapper<MsgSend>)txPost.Tx.Msg[0]).Value.Amount[0].Denom);
             Assert.Equal("thorchain/MsgSend", ((AminoWrapper<MsgSend>)txPost.Tx.Msg[0]).Type);
         }
@@ -343,7 +343,7 @@ namespace XchainDotnet.Cosmos.Test
                 Data = "0A090A076465706F736974",
                 GasUsed = "148996",
                 GasWanted = "5000000000000000",
-                Height = 1047,
+                Height = "1047",
                 RawLog = "transaction logs",
                 TimeStamp = "2020-09-25T06:09:15Z",
                 TxHash = "19BFC1E8EBB10AA1EC6B82E380C6F5FD349D367737EA8D55ADB4A24F0F7D1066",
@@ -362,7 +362,7 @@ namespace XchainDotnet.Cosmos.Test
                                     {
                                         new Coin
                                         {
-                                            Amount = 1000000,
+                                            Amount = "1000000",
                                             Denom = "thor"
                                         }
                                     },

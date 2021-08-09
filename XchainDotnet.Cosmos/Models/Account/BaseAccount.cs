@@ -17,9 +17,9 @@ namespace XchainDotnet.Cosmos.Models.Account
         [JsonPropertyName("coins")]
         public List<Coin> Coins { get; set; }
         [JsonPropertyName("account_number")]
-        public string AccountNumber { get; set; }
+        public string AccountNumber { get; set; } = "0";
         [JsonPropertyName("sequence")]
-        public string Sequence { get; set; }
+        public string Sequence { get; set; } = "0";
 
         public static BaseAccount FromJson(dynamic value)
         {

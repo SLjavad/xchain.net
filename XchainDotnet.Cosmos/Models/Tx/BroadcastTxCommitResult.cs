@@ -17,7 +17,7 @@ namespace XchainDotnet.Cosmos.Models.Tx
         [JsonPropertyName("txhash")]
         public string TxHash { get; set; }
         [JsonPropertyName("height")]
-        public int? Height { get; set; }
+        public string Height { get; set; }
 
         [JsonPropertyName("check_tx")]
         public CheckTxResult CheckTxResult { get; set; }

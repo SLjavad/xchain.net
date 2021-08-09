@@ -272,7 +272,7 @@ namespace XchainDotnet.Cosmos.SDK
                             {
                                 new Models.Coin
                                 {
-                                    Amount = transferParams.Amount,
+                                    Amount = transferParams.Amount.ToString(),
                                     Denom = transferParams.Asset
                                 }
                             },

@@ -171,7 +171,7 @@ namespace XchainDotnet.Thorchain
                        {
                            var msgSend = msg as MsgSend;
                            //var amount = msgSend.Amount.Select(coin => coin.Amount).Aggregate((decimal)0, (acc, cur) => acc + cur);
-                           var amount = msgSend.Amount.Sum(coin => coin.Amount);
+                           var amount = msgSend.Amount.Sum(coin => decimal.Parse(coin.Amount));
 
                            var from_index = -1;
 
@@ -209,7 +209,7 @@ namespace XchainDotnet.Thorchain
 
                            msgMultiSend.Inputs.ForEach(inp =>
                            {
-                               var amount = inp.Coins.Sum(coin => coin.Amount);
+                               var amount = inp.Coins.Sum(coin => decimal.Parse(coin.Amount));
 
                                var from_index = -1;
 
@@ -229,7 +229,7 @@ namespace XchainDotnet.Thorchain
 
                            msgMultiSend.Outputs.ForEach(output =>
                            {
-                               var amount = output.Coins.Sum(coin => coin.Amount);
+                               var amount = output.Coins.Sum(coin => decimal.Parse(coin.Amount));
 
                                var to_index = -1;
 
