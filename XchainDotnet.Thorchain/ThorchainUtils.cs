@@ -14,8 +14,15 @@ using XchainDotnet.Thorchain.Models;
 
 namespace XchainDotnet.Thorchain
 {
+    /// <summary>
+    /// Utils for thorchain
+    /// </summary>
     public class ThorchainUtils
     {
+        /// <summary>
+        /// Get Default Client URL
+        /// </summary>
+        /// <returns>Default <see cref="ClientUrl"/> Object</returns>
         public static ClientUrl GetDefaultClientUrl()
         {
             return new ClientUrl()
@@ -25,6 +32,10 @@ namespace XchainDotnet.Thorchain
             };
         }
 
+        /// <summary>
+        /// Get Default Explorer URL
+        /// </summary>
+        /// <returns>Default <see cref="ExplorerUrl"/> Object</returns>
         public static ExplorerUrl GetDefaultExplorerUrl()
         {
             return new ExplorerUrl
@@ -34,6 +45,11 @@ namespace XchainDotnet.Thorchain
             };
         }
 
+        /// <summary>
+        /// Get Prefix based on network
+        /// </summary>
+        /// <param name="network">network type</param>
+        /// <returns>prefix string</returns>
         public static string GetPrefix(Network network) => network switch
         {
             Network.mainnet => "thor",
@@ -41,6 +57,11 @@ namespace XchainDotnet.Thorchain
             _ => throw new Exception("Invalid Network"),
         };
 
+        /// <summary>
+        /// Get Asset from denomination
+        /// </summary>
+        /// <param name="denom">input denom</param>
+        /// <returns>The asset of the given denomination</returns>
         public static Asset GetAsset(string denom)
         {
             if (denom == GetDenom(new AssetRune()))
@@ -50,6 +71,11 @@ namespace XchainDotnet.Thorchain
             return Utils.AssetFromString($"THOR.{denom.ToUpperInvariant()}");
         }
 
+        /// <summary>
+        /// Get denomination from Asset
+        /// </summary>
+        /// <param name="asset">input asset</param>
+        /// <returns>The denomination of the given asset</returns>
         public static string GetDenom(Asset asset)
         {
             if (Utils.AssetToString(asset) == Utils.AssetToString(new AssetRune()))
@@ -62,6 +88,11 @@ namespace XchainDotnet.Thorchain
             }
         }
 
+        /// <summary>
+        /// Get denomination with chainname from Asset
+        /// </summary>
+        /// <param name="asset">input asset</param>
+        /// <returns>The denomination with chainname of the given asset</returns>
         public static string GetDenomWithChain(Asset asset)
         {
             return $"{Chain.THOR}.{asset.Symbol.ToUpperInvariant()}";
@@ -76,6 +107,12 @@ namespace XchainDotnet.Thorchain
             return bytes;
         }
 
+        /// <summary>
+        /// Get transaction type.
+        /// </summary>
+        /// <param name="txData">the transaction input data</param>
+        /// <param name="encoding">`base64` or `hex`</param>
+        /// <returns>the transaction type</returns>
         public static string GetTxType(string txData, string encoding)
         {
             switch (encoding)
@@ -97,6 +134,11 @@ namespace XchainDotnet.Thorchain
             }
         }
 
+        /// <summary>
+        /// Type guard for MsgSend
+        /// </summary>
+        /// <param name="msg">input msg</param>
+        /// <returns>true or false</returns>
         public static bool IsMsgSend(Msg msg)
         {
             if (msg == null)
@@ -110,6 +152,11 @@ namespace XchainDotnet.Thorchain
             return false;
         }
 
+        /// <summary>
+        /// Type guard for MsgMultiSend
+        /// </summary>
+        /// <param name="msg">input msg</param>
+        /// <returns>true or false</returns>
         public static bool IsMsgMultiSend(Msg msg)
         {
             if (msg == null)
@@ -123,7 +170,13 @@ namespace XchainDotnet.Thorchain
             return false;
         }
 
-        public static List<Tx> GetTxFromHistory(List<TxResponse> txs, Network network)
+        /// <summary>
+        /// Parse transaction type
+        /// </summary>
+        /// <param name="txs">The transaction response from the node</param>
+        /// <param name="network">network</param>
+        /// <returns>list of parsed transaction</returns>
+        public static List<Tx> GetTxsFromHistory(List<TxResponse> txs, Network network)
         {
             var prefix = GetPrefix(network);
             AccAddress.SetBech32Prefix(prefix,
@@ -262,6 +315,10 @@ namespace XchainDotnet.Thorchain
             return result;
         }
 
+        /// <summary>
+        /// Get the default fee.
+        /// </summary>
+        /// <returns>The default fee</returns>
         public static Fees GetDefaultFees()
         {
             var fee = ThorchainConstantValues.DEFAULT_GAS_VALUE;
@@ -275,6 +332,11 @@ namespace XchainDotnet.Thorchain
             };
         }
 
+        /// <summary>
+        /// Response guard for transaction broadcast
+        /// </summary>
+        /// <param name="result">The response from the node</param>
+        /// <returns>true or false</returns>
         public static bool IsBroadcastSuccess(BroadcastTxCommitResult result) => result.Logs != null;
     }
 }

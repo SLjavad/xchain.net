@@ -68,6 +68,9 @@ namespace XchainDotnet.Thorchain
                 Address = string.Empty;
             }
         }
+        /// <summary>
+        /// Cosmos SDK Client in thorchain client
+        /// </summary>
         public CosmosSdkClient ThorClient { get; set; }
         public string Address
         {
@@ -90,6 +93,9 @@ namespace XchainDotnet.Thorchain
             }
         }
         public ExplorerUrl ExplorerUrl { get; set; }
+        /// <summary>
+        /// Client Private Key
+        /// </summary>
         public IPrivateKey PrivateKey
         {
             get => _privateKey;
@@ -106,6 +112,15 @@ namespace XchainDotnet.Thorchain
             }
         }
 
+        /// <summary>
+        /// Thorchain Client object
+        /// <para>if client url and explorer url not provided , they will set by their default value</para>
+        /// </summary>
+        /// <param name="phrase">input phrase</param>
+        /// <param name="clientUrl">Client url</param>
+        /// <param name="explorerUrl">Explorer url</param>
+        /// <param name="network">network type</param>
+        /// <exception cref="PhraseNotValidException">throw exception if phrase is invalid</exception>
         public ThorchainClient(string phrase, ClientUrl clientUrl, ExplorerUrl explorerUrl, Network network = Network.testnet)
         {
             _network = network;
@@ -176,7 +191,7 @@ namespace XchainDotnet.Thorchain
                 }
                 else
                 {
-                    var result = ThorchainUtils.GetTxFromHistory(new List<TxResponse>
+                    var result = ThorchainUtils.GetTxsFromHistory(new List<TxResponse>
                     {
                         txResult
                     }, Network);
@@ -197,6 +212,11 @@ namespace XchainDotnet.Thorchain
 
         }
 
+        /// <summary>
+        /// Get the transaction details of a given transaction id. (from /thorchain/txs/hash)
+        /// </summary>
+        /// <param name="txId">transaction id</param>
+        /// <returns><see cref="Tx"/> Object</returns>
         public async Task<Tx> GetDepositTransaction(string txId)
         {
             try
@@ -456,6 +476,11 @@ namespace XchainDotnet.Thorchain
             }
         }
 
+        /// <summary>
+        /// Structure StdTx from MsgNativeTx
+        /// </summary>
+        /// <param name="msgNativeTx">msgNativeTx</param>
+        /// <returns><see cref="StdTx"/> object</returns>
         public async Task<StdTx> BuildDepositTx(MsgNativeTx msgNativeTx)
         {
             try
