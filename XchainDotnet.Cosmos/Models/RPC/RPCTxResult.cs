@@ -25,6 +25,9 @@ namespace XchainDotnet.Cosmos.Models.RPC
         public string CodeSpace { get; set; }
     }
 
+    /// <summary>
+    /// RPC result object
+    /// </summary>
     public class RPCTxResult
     {
         [JsonPropertyName("hash")]

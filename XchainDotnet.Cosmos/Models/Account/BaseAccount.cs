@@ -7,17 +7,35 @@ using XchainDotnet.Cosmos.Utils.JsonConverters;
 
 namespace XchainDotnet.Cosmos.Models.Account
 {
+    /// <summary>
+    /// Base Account type
+    /// </summary>
     public class BaseAccount
     {
+        /// <summary>
+        /// Account Address
+        /// </summary>
         [JsonPropertyName("address")]
         public AccAddress Address { get; set; }
+        /// <summary>
+        /// Account public key
+        /// </summary>
         [JsonPropertyName("public_key")]
         [JsonConverter(typeof(PublicKeyJsonConverter))]
         public IPublicKey PublicKey { get; set; }
+        /// <summary>
+        /// Account Coins
+        /// </summary>
         [JsonPropertyName("coins")]
         public List<Coin> Coins { get; set; }
+        /// <summary>
+        /// Account number
+        /// </summary>
         [JsonPropertyName("account_number")]
         public string AccountNumber { get; set; } = "0";
+        /// <summary>
+        /// Account Sequence
+        /// </summary>
         [JsonPropertyName("sequence")]
         public string Sequence { get; set; } = "0";
 

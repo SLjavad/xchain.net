@@ -14,6 +14,15 @@ namespace XchainDotnet.Cosmos
 {
     public class Auth
     {
+        /// <summary>
+        /// Sign the Tx
+        /// </summary>
+        /// <param name="cosmosSdkClient">Cosmos sdk </param>
+        /// <param name="privateKey">private key</param>
+        /// <param name="stdTx">tx</param>
+        /// <param name="accountNumber">account number</param>
+        /// <param name="sequence">account sequence</param>
+        /// <returns>signed tx</returns>
         public static StdTx SignStdTx(CosmosSdkClient cosmosSdkClient, IPrivateKey privateKey, StdTx stdTx, string accountNumber, string sequence)
         {
             var signBytes = stdTx.GetSignBytes(cosmosSdkClient.chainId, accountNumber, sequence);

@@ -2,6 +2,9 @@
 
 namespace XchainDotnet.Cosmos.Models.Tx
 {
+    /// <summary>
+    /// Broadcast tx Result
+    /// </summary>
     public class BroadcastTxCommitResult
     {
         [JsonPropertyName("data")]

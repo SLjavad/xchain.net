@@ -16,6 +16,9 @@ using XchainDotnet.Cosmos.Models.Tx;
 
 namespace XchainDotnet.Cosmos.SDK
 {
+    /// <summary>
+    /// Cosmos Sdk Client
+    /// </summary>
     public class CosmosSdkClient
     {
         public readonly string server;
@@ -25,6 +28,13 @@ namespace XchainDotnet.Cosmos.SDK
 
         private const string BASE_PATH = "https://api.cosmos.network";
 
+        /// <summary>
+        /// Cosmos sdk client
+        /// </summary>
+        /// <param name="server">server address</param>
+        /// <param name="chainId">chain id</param>
+        /// <param name="prefix">prefix</param>
+        /// <param name="derivePath">derivation path</param>
         public CosmosSdkClient(string server, string chainId, string prefix = "cosmos", string derivePath = "44'/118'/0'/0/0")
         {
             this.server = server;
@@ -33,6 +43,9 @@ namespace XchainDotnet.Cosmos.SDK
             this.derivePath = derivePath;
         }
 
+        /// <summary>
+        /// set default prefixes
+        /// </summary>
         public void SetPrefix()
         {
             BaseAddress.SetBech32Prefix(
@@ -44,12 +57,22 @@ namespace XchainDotnet.Cosmos.SDK
                 prefix + "valconspub");
         }
 
+        /// <summary>
+        /// Get bech32 address from private key
+        /// </summary>
+        /// <param name="privateKey"></param>
+        /// <returns>bech32 address</returns>
         public string GetAddressFromPrivKey(IPrivateKey privateKey)
         {
             SetPrefix();
             return AccAddress.FromPublicKey(privateKey.GetPublicKey()).ToBech32();
         }
 
+        /// <summary>
+        /// Get private key from mnemonic
+        /// </summary>
+        /// <param name="mnemonic">mnemonic phrase</param>
+        /// <returns>private key object</returns>
         public IPrivateKey GetPrivKeyFromMnemonic(string mnemonic)
         {
             Mnemonic mnemonic1 = new(mnemonic);
@@ -58,6 +81,11 @@ namespace XchainDotnet.Cosmos.SDK
             return new PrivateKeySecp256k1(key.PrivateKey.ToBytes());
         }
 
+        /// <summary>
+        /// Address validation
+        /// </summary>
+        /// <param name="address">input address</param>
+        /// <returns>true or false</returns>
         public bool CheckAddress(string address)
         {
             try
@@ -78,6 +106,11 @@ namespace XchainDotnet.Cosmos.SDK
 
         }
 
+        /// <summary>
+        /// Get Balances from input address
+        /// </summary>
+        /// <param name="address">input address</param>
+        /// <returns>List of coins belong to the input address</returns>
         public async Task<List<Models.Coin>> GetBalance(string address)
         {
             try
@@ -101,6 +134,12 @@ namespace XchainDotnet.Cosmos.SDK
             }
         }
 
+
+        /// <summary>
+        /// Get Tx details
+        /// </summary>
+        /// <param name="hash">tx hash</param>
+        /// <returns><see cref="TxResponse"/></returns>
         public async Task<TxResponse> TxHashGet(string hash)
         {
             try
@@ -133,6 +172,11 @@ namespace XchainDotnet.Cosmos.SDK
             }
         }
 
+        /// <summary>
+        /// Search tx from RPC
+        /// </summary>
+        /// <param name="searchTxParams">search tx options</param>
+        /// <returns><see cref="RPCTxSearchResult"/></returns>
         public async Task<RPCTxSearchResult> SearchTxFromRPC(SearchTxParams searchTxParams)
         {
             try
@@ -202,6 +246,13 @@ namespace XchainDotnet.Cosmos.SDK
             }
         }
 
+        /// <summary>
+        /// sing and broadcast tx
+        /// </summary>
+        /// <param name="unsignedStdTx">input tx</param>
+        /// <param name="privateKey">private key</param>
+        /// <param name="signer">signer address object</param>
+        /// <returns><see cref="BroadcastTxCommitResult"/></returns>
         public async Task<BroadcastTxCommitResult> SignAndBroadcast(StdTx unsignedStdTx, IPrivateKey privateKey, AccAddress signer)
         {
             try
@@ -258,6 +309,11 @@ namespace XchainDotnet.Cosmos.SDK
             }
         }
 
+        /// <summary>
+        /// Trasnfer method
+        /// </summary>
+        /// <param name="transferParams">Transfer message parameters</param>
+        /// <returns><see cref="BroadcastTxCommitResult"/></returns>
         public Task<BroadcastTxCommitResult> Transfer(TransferParams transferParams)
         {
             try

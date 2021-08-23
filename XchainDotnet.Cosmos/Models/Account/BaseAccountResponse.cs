@@ -2,6 +2,9 @@
 
 namespace XchainDotnet.Cosmos.Models.Account
 {
+    /// <summary>
+    /// Base Account Response
+    /// </summary>
     public class BaseAccountResponse
     {
         [JsonPropertyName("type")]

@@ -2,6 +2,9 @@
 
 namespace XchainDotnet.Cosmos.Models.Tx
 {
+    /// <summary>
+    /// Search Tx options
+    /// </summary>
     public class SearchTxParams
     {
         [JsonPropertyName("messageAction")]

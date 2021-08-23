@@ -5,8 +5,17 @@ using XchainDotnet.Cosmos.Models.Message.Base;
 
 namespace XchainDotnet.Cosmos.Models.Message
 {
+    /// <summary>
+    /// Deposit message
+    /// </summary>
     public class MsgDeposit : Msg
     {
+        /// <summary>
+        /// Deposit Message
+        /// </summary>
+        /// <param name="coins">message coins</param>
+        /// <param name="memo">message memo</param>
+        /// <param name="signer">message signer address object</param>
         public MsgDeposit(List<MsgCoinDeposit> coins, string memo, AccAddress signer)
         {
             Coins = coins;
@@ -19,10 +28,19 @@ namespace XchainDotnet.Cosmos.Models.Message
 
         }
 
+        /// <summary>
+        /// message coins
+        /// </summary>
         [JsonPropertyName("coins")]
         public List<MsgCoinDeposit> Coins { get; set; }
+        /// <summary>
+        /// Message memo
+        /// </summary>
         [JsonPropertyName("memo")]
         public string Memo { get; set; }
+        /// <summary>
+        /// Message signer address object
+        /// </summary>
         [JsonPropertyName("signer")]
         public AccAddress Signer { get; set; }
     }

@@ -22,6 +22,9 @@ namespace XchainDotnet.Cosmos.Models.Message
         public List<Coin> Coins { get; set; }
     }
 
+    /// <summary>
+    /// Message for multiple input output
+    /// </summary>
     public class MsgMultiSend : Msg
     {
         public MsgMultiSend(List<Input> inputs, List<Output> outputs)
@@ -35,8 +38,14 @@ namespace XchainDotnet.Cosmos.Models.Message
 
         }
 
+        /// <summary>
+        /// input addresses
+        /// </summary>
         [JsonPropertyName("inputs")]
         public List<Input> Inputs { get; set; }
+        /// <summary>
+        /// output addresses
+        /// </summary>
         [JsonPropertyName("outputs")]
         public List<Output> Outputs { get; set; }
 

@@ -4,10 +4,17 @@ using XchainDotnet.Cosmos.Models.Crypto;
 
 namespace XchainDotnet.Cosmos.Models.Address
 {
+    /// <summary>
+    /// Base Address
+    /// </summary>
     public class BaseAddress
     {
         protected readonly byte[] value;
 
+        /// <summary>
+        /// Base Address
+        /// </summary>
+        /// <param name="value">input value as byte array. must be 20 bytes length</param>
         public BaseAddress(byte[] value)
         {
             const int addressLen = 20;
@@ -18,6 +25,11 @@ namespace XchainDotnet.Cosmos.Models.Address
             this.value = value;
         }
 
+        /// <summary>
+        /// Get Address from public key
+        /// </summary>
+        /// <param name="publicKey"></param>
+        /// <returns></returns>
         public static BaseAddress FromPublicKey(IPublicKey publicKey)
         {
             return new BaseAddress(publicKey.GetAddress());
