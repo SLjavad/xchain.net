@@ -4,7 +4,7 @@
     <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Version>0.0.1</Version>
+    <Version>0.0.2</Version>
     <Authors>SLjavad</Authors>
     <Description>A specification for a generalised interface for crypto wallets clients, to be used by XchainDotnet implementations</Description>
     <PackageTags>Xchain.net;XchainDotnet;Xchain.net.client;XchainDotnet.client;thorchain</PackageTags>
