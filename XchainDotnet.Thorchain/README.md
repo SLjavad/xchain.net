@@ -5,7 +5,7 @@ Thorchain Module for XChainDotnet Clients
 ## Installation
 
 ```
-dotnet add package XchainDotnet.Thorchain --version 0.0.3
+dotnet add package XchainDotnet.Thorchain
 ```
 The Package is based on latest .net (.net5) so it supports .netcore 3.1 and .net5
 
@@ -36,7 +36,7 @@ var result = await client.GetTransactions(new TxHistoryParamFilter
 Console.WriteLine('txs total:', txs.total) // txs total: 100
 
 // get transaction details
-var tx = await this.thorClient.GetTranasctionData("19BFC1E8EBB10AA1EC6B82E380C6F5FD349D367737EA8D55ADB4A24F0F7D1066");
+var tx = await client.GetTranasctionData("19BFC1E8EBB10AA1EC6B82E380C6F5FD349D367737EA8D55ADB4A24F0F7D1066");
 Console.WriteLine(tx.Type); // transfer
 Console.WriteLine(tx.Hash); //"19BFC1E8EBB10AA1EC6B82E380C6F5FD349D367737EA8D55ADB4A24F0F7D1066"
 Console.WriteLine(tx.Asset); //{ chain: 'THOR', symbol: 'RUNE', ticker: 'RUNE' }
