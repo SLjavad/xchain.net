@@ -1,7 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Version>0.0.1</Version>
+    <Authors>SLjavad</Authors>
+    <Description>Binance Client Module for XchainDotnet</Description>
+    <PackageTags>Xchain.net;XchainDotnet;Xchain.net.binance;XchainDotnet.binance;thorchain</PackageTags>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/SLjavad/xchain.net</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/SLjavad/xchain.net</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\XchainDotnet.Client\XchainDotnet.Client.csproj" />
+  </ItemGroup>
 
 </Project>
