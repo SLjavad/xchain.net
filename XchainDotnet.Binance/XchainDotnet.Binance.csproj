@@ -15,6 +15,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BinanceDEXClient" Version="1.0.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\XchainDotnet.Client\XchainDotnet.Client.csproj" />
   </ItemGroup>
 

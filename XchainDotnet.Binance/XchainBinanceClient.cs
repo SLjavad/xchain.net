@@ -8,7 +8,7 @@ using XchainDotnet.Client.Models;
 
 namespace XchainDotnet.Binance
 {
-    public class BinanceClient : IXchainClient
+    public class XchainBinanceClient : IXchainClient
     {
         public string Phrase { get; set; }
         public Network Network { get; set; }
