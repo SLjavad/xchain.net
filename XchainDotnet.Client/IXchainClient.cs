@@ -12,6 +12,13 @@ namespace XchainDotnet.Client
         /// </summary>
         string Phrase { get; set; }
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="phrase"></param>
+        /// <param name="walletIndex"></param>
+        /// <returns></returns>
+        string SetPhrase(string phrase, int walletIndex);
+        /// <summary>
         /// Network type (mainnet or testnet)
         /// </summary>
         Network Network { get; set; }
@@ -19,6 +26,12 @@ namespace XchainDotnet.Client
         /// Client address
         /// </summary>
         string Address { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="walletIndex"></param>
+        /// <returns></returns>
+        string GetAddress(int? walletIndex);
         /// <summary>
         /// Explorer URL object
         /// </summary>
