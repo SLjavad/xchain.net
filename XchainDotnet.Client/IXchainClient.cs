@@ -21,7 +21,7 @@ namespace XchainDotnet.Client
         /// <summary>
         /// Network type (mainnet or testnet)
         /// </summary>
-        Network Network { get; set; }
+        Network? Network { get; set; }
         /// <summary>
         /// Client address
         /// </summary>

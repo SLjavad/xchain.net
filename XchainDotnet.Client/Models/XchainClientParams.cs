@@ -8,7 +8,7 @@ namespace XchainDotnet.Client.Models
     public class XchainClientParams
     {
         [JsonPropertyName("network")]
-        public Network Network { get; set; }
+        public Network? Network { get; set; }
         [JsonPropertyName("phrase")]
         public string Phrase { get; set; }
         [JsonPropertyName("rootDerivationPaths")]
