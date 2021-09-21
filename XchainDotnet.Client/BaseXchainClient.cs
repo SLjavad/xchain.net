@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using XchainDotnet.Client.Models;
 
@@ -42,6 +45,45 @@ namespace XchainDotnet.Client
                 }
                 this.Phrase = xchainClientParams.Phrase;
             }
+
+        }
+
+        protected async Task<decimal> GetFeeRateFromThorchain()
+        {
+            var respData = await this.ThornodeApiGet("/inbound_addresses");
+
+            var chainData = respData.Where(x => x.Chain == this.Chain).Select(x => x.GasRate).FirstOrDefault();
+
+            if (string.IsNullOrEmpty(chainData))
+            {
+                throw new Exception($"Thornode API /inbound_addresses does not contain fees for {this.Chain}");
+            }
+
+            return decimal.Parse(chainData);
+        }
+
+        protected async Task<List<InboundAddressResponse>> ThornodeApiGet(string endpoint)
+        {
+            var url = string.Empty;
+            switch (this.Network)
+            {
+                case Models.Network.mainnet:
+                    url =  ConstVals.MAINNET_THORNODE_API_BASE;
+                    break;
+                case Models.Network.testnet:
+                    url = ConstVals.TESTNET_THORNODE_API_BASE;
+                    break;
+            }
+
+            var response = await GlobalHttpClient.HttpClient.GetAsync(url + endpoint);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var resTemp = await response.Content.ReadAsStringAsync();
+                var res = JsonSerializer.Deserialize<List<InboundAddressResponse>>(resTemp);
+                return res;
+            }
+            return null;
 
         }
 
