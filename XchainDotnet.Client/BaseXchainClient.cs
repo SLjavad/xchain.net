@@ -6,29 +6,35 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using XchainDotnet.Client.Models;
+using XchainDotnet.Crypto;
 
 namespace XchainDotnet.Client
 {
     public abstract class BaseXchainClient : IXchainClient
     {
         private Network? _network;
+        private string _phrase;
 
         protected Chain Chain { get; set; }
         protected RootDerivationPaths RootDerivationPaths { get; set; }
 
-        public string Phrase { get; set; }
-        public Network? Network {
+        public string Phrase
+        {
+            get => _phrase;
+        }
+        public Network? Network
+        {
             get => _network;
             set
             {
                 this._network = value ?? throw new Exception("Network must be provided");
-            } 
+            }
         }
         public string Address { get; set; }
         public ExplorerUrl ExplorerUrl { get; set; }
 
 
-        public BaseXchainClient(Chain chain , XchainClientParams xchainClientParams)
+        public BaseXchainClient(Chain chain, XchainClientParams xchainClientParams)
         {
             this.Chain = chain;
             this.Network = xchainClientParams.Network ?? Models.Network.testnet;
@@ -43,7 +49,7 @@ namespace XchainDotnet.Client
                 {
                     throw new Exception("invalid phrase");
                 }
-                this.Phrase = xchainClientParams.Phrase;
+                this._phrase = xchainClientParams.Phrase;
             }
 
         }
@@ -68,7 +74,7 @@ namespace XchainDotnet.Client
             switch (this.Network)
             {
                 case Models.Network.mainnet:
-                    url =  ConstVals.MAINNET_THORNODE_API_BASE;
+                    url = ConstVals.MAINNET_THORNODE_API_BASE;
                     break;
                 case Models.Network.testnet:
                     url = ConstVals.TESTNET_THORNODE_API_BASE;
@@ -87,59 +93,43 @@ namespace XchainDotnet.Client
 
         }
 
-        public string GetAddress(int? walletIndex)
+        protected string GetFullDerivationPath(int walletIndex)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<Balance>> GetBalance(string address = "", List<Asset> assets = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string GetExplorerAddressUrl(string address)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string GetExplorerTxUrl(string txId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Fees> GetFees(FeeParams @params = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Tx> GetTranasctionData(string txId, string assetAddress = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<TxPage> GetTransactions(TxHistoryParams txHistoryParams = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void PurgeClient()
-        {
-            throw new NotImplementedException();
+            var res = this.RootDerivationPaths != null ? $"{this.RootDerivationPaths.GetByNetwork(this.Network.Value)}{walletIndex}" : "";
+            return res;
         }
 
         public string SetPhrase(string phrase, int walletIndex)
         {
-            throw new NotImplementedException();
+            if (_phrase != phrase)
+            {
+                if (!XchainCrypto.ValidatePhrase(phrase))
+                {
+                    throw new Exception($"{phrase} Invalid Phrase");
+                }
+                _phrase = phrase;
+            }
+            return this.GetAddress(walletIndex);
         }
 
-        public Task<string> Transfer(TxParams transferParams)
+        public void PurgeClient()
         {
-            throw new NotImplementedException();
+            this._phrase = string.Empty;
         }
 
-        public bool ValidateAddress(string address)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract string GetAddress(int? walletIndex);
+
+        public abstract Task<List<Balance>> GetBalance(string address = "", List<Asset> assets = null);
+
+        public abstract string GetExplorerAddressUrl(string address);
+
+        public abstract string GetExplorerTxUrl(string txId);
+
+        public abstract Task<Fees> GetFees(FeeParams @params = null);
+
+        public abstract Task<Tx> GetTranasctionData(string txId, string assetAddress = null);
+        public abstract Task<TxPage> GetTransactions(TxHistoryParams txHistoryParams = null);
+        public abstract Task<string> Transfer(TxParams transferParams);
+        public abstract bool ValidateAddress(string address);
     }
 }

@@ -11,5 +11,15 @@ namespace XchainDotnet.Client.Models
         public string Mainnet { get; set; }
         [JsonPropertyName("testnet")]
         public string Testnet { get; set; }
+
+        public string GetByNetwork(Network network)
+        {
+            return network switch
+            {
+                Network.mainnet => Mainnet,
+                Network.testnet => Testnet,
+                _ => "",
+            };
+        }
     }
 }

@@ -10,7 +10,7 @@ namespace XchainDotnet.Client
         /// <summary>
         /// Client Phrase
         /// </summary>
-        string Phrase { get; set; }
+        string Phrase { get; }
         /// <summary>
         /// 
         /// </summary>
