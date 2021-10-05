@@ -34,6 +34,11 @@ namespace XchainDotnet.Client
         public ExplorerUrl ExplorerUrl { get; set; }
 
 
+        public BaseXchainClient()
+        {
+
+        }
+
         public BaseXchainClient(Chain chain, XchainClientParams xchainClientParams)
         {
             this.Chain = chain;

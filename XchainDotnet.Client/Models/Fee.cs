@@ -49,6 +49,6 @@ namespace XchainDotnet.Client.Models
 
     public class FeeParams
     {
-
+        public string Memo { get; set; }
     }
 }
