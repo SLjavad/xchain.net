@@ -10,10 +10,17 @@ namespace XchainDotnet.Client
     {
 
         protected abstract Task<int> GetSuggestedFeeRate();
-        protected abstract Task<decimal> CalcFee(int feeRate, string memo);
+        protected abstract decimal CalcFee(decimal feeRate, string memo);
         public async Task<FeesWithRates> GetFeesWithRates(string memo)
         {
-            //var rates = await GetFeeRates();
+            var rates = await GetFeeRates();
+            var res = new FeesWithRates
+            {
+                Fees = FeeUtil.CalcFees(rates, CalcFee, memo),
+                Rates = rates
+            };
+
+            return res;
         } 
 
         public async Task<FeeRates> GetFeeRates()
@@ -29,7 +36,7 @@ namespace XchainDotnet.Client
                 feeRate = await this.GetSuggestedFeeRate();
             }
 
-            var res = FeeRateUtil.StandardFeeRates(feeRate);
+            var res = FeeUtil.StandardFeeRates(feeRate);
             return res;
         }
 

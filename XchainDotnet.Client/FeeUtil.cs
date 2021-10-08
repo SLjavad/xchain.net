@@ -5,7 +5,7 @@ using XchainDotnet.Client.Models;
 
 namespace XchainDotnet.Client
 {
-    public class FeeRateUtil
+    public class FeeUtil
     {
         public static FeeRates SingleFeeRate(decimal rate)
         {
@@ -24,6 +24,17 @@ namespace XchainDotnet.Client
                 Average = (rate / 2),
                 Fastest = rate * 5,
                 Fast = rate
+            };
+        }
+
+        public static Fees CalcFees(FeeRates feeRates , Func<decimal, string, decimal> calcFee , string memo)
+        {
+            return new Fees
+            {
+                Average = calcFee(feeRates.Average, memo),
+                Fast = calcFee(feeRates.Fast, memo),
+                Fastest = calcFee(feeRates.Fastest, memo),
+                Type = FeeType.@byte
             };
         }
     }
