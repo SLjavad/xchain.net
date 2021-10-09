@@ -17,6 +17,17 @@ namespace XchainDotnet.Client
             };
         }
 
+        public static Fees SingleFee(FeeType feeType , decimal fee)
+        {
+            return new Fees
+            {
+                Average = fee,
+                Fast = fee,
+                Fastest = fee,
+                Type = feeType
+            };
+        }
+
         public static FeeRates StandardFeeRates(decimal rate)
         {
             return new FeeRates
@@ -24,6 +35,17 @@ namespace XchainDotnet.Client
                 Average = (rate / 2),
                 Fastest = rate * 5,
                 Fast = rate
+            };
+        }
+
+        public static Fees StandardFees(FeeType feeType , decimal fee)
+        {
+            return new Fees
+            {
+                Average = (fee / 2),
+                Fastest = fee * 5,
+                Fast = fee,
+                Type = feeType
             };
         }
 
