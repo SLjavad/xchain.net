@@ -19,6 +19,8 @@ namespace XchainDotnet.Thorchain
     /// </summary>
     public class ThorchainUtils
     {
+        public const string DEFAULT_EXPLORER_URL = "https://viewblock.io/thorchain";
+
         /// <summary>
         /// Get Default Client URL
         /// </summary>
@@ -36,12 +38,25 @@ namespace XchainDotnet.Thorchain
         /// Get Default Explorer URL
         /// </summary>
         /// <returns>Default <see cref="ExplorerUrl"/> Object</returns>
-        public static ExplorerUrl GetDefaultExplorerUrl()
+        public static ExplorerUrls GetDefaultExplorerUrl()
         {
-            return new ExplorerUrl
+            return new ExplorerUrls
             {
-                Testnet = "https://testnet.thorchain.net/#",
-                Mainnet = "https://thorchain.net/#"
+                Address = new ExplorerUrl
+                {
+                    Mainnet = $"{DEFAULT_EXPLORER_URL}/address",
+                    Testnet = $"{DEFAULT_EXPLORER_URL}/address"
+                },
+                Root = new ExplorerUrl
+                {
+                    Testnet = $"{DEFAULT_EXPLORER_URL}?network=testnet",
+                    Mainnet = DEFAULT_EXPLORER_URL
+                },
+                Tx = new ExplorerUrl
+                {
+                    Mainnet = $"{DEFAULT_EXPLORER_URL}/tx",
+                    Testnet = $"{DEFAULT_EXPLORER_URL}/tx"
+                }
             };
         }
 

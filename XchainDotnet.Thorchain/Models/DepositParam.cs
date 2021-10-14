@@ -23,5 +23,10 @@ namespace XchainDotnet.Thorchain.Models
         /// </summary>
         [JsonPropertyName("memo")]
         public string Memo { get; set; }
+        /// <summary>
+        /// Deposit Wallet Index
+        /// </summary>
+        [JsonPropertyName("walletIndex")]
+        public int? WalletIndex { get; set; }
     }
 }

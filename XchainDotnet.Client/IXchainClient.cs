@@ -35,7 +35,7 @@ namespace XchainDotnet.Client
         /// <summary>
         /// Explorer URL object
         /// </summary>
-        ExplorerUrl ExplorerUrl { get; set; }
+        ExplorerUrl GetExplorerUrl();
         // Methods
         /// <summary>
         /// Get the explorer url for the given address
