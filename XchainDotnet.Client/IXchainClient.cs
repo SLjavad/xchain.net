@@ -33,9 +33,9 @@ namespace XchainDotnet.Client
         /// <returns></returns>
         string GetAddress(int? walletIndex);
         /// <summary>
-        /// Explorer URL object
+        /// Get the Explorer URL
         /// </summary>
-        ExplorerUrl GetExplorerUrl();
+        string GetExplorerUrl();
         // Methods
         /// <summary>
         /// Get the explorer url for the given address

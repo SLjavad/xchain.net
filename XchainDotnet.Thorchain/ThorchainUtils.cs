@@ -353,5 +353,27 @@ namespace XchainDotnet.Thorchain
         /// <param name="result">The response from the node</param>
         /// <returns>true or false</returns>
         public static bool IsBroadcastSuccess(BroadcastTxCommitResult result) => result.Logs != null;
+
+        public static string GetExplorerAddressUrl(ExplorerUrls explorerUrls , Network network , string address)
+        {
+            var url = $"{explorerUrls.Address.GetExplorerUrlByNetwork(network)}/{address}";
+            return network switch
+            {
+                Network.mainnet => url,
+                Network.testnet => $"{url}?network=testnet",
+                _ => throw new Exception("invalid network"),
+            };
+        }
+
+        public static string GetExplorerTxUrl(ExplorerUrls explorerUrls, Network network, string txId)
+        {
+            var url = $"{explorerUrls.Tx.GetExplorerUrlByNetwork(network)}/{txId}";
+            return network switch
+            {
+                Network.mainnet => url,
+                Network.testnet => $"{url}?network=testnet",
+                _ => throw new Exception("invalid network"),
+            };
+        }
     }
 }

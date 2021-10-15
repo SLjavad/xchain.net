@@ -98,7 +98,7 @@ namespace XchainDotnet.Thorchain.Tests
         [Fact]
         public void Should_allow_to_get_the_CosmosSdkClient()
         {
-            Assert.IsType<CosmosSdkClient>(this.thorClient.ThorClient);
+            Assert.IsType<CosmosSdkClient>(this.thorClient.CosmosClient);
         }
 
         [Fact]

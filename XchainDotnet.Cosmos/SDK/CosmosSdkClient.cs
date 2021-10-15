@@ -23,7 +23,7 @@ namespace XchainDotnet.Cosmos.SDK
     {
         public readonly string server;
         public readonly string chainId; //TODO: change to property
-        private readonly string prefix;
+        private string prefix;
         private readonly string derivePath;
 
         private const string BASE_PATH = "https://api.cosmos.network";
@@ -55,6 +55,12 @@ namespace XchainDotnet.Cosmos.SDK
                 prefix + "valoperpub",
                 prefix + "valcons",
                 prefix + "valconspub");
+        }
+
+        public void UpdatePrefix(string prefix)
+        {
+            this.prefix = prefix;
+            this.SetPrefix();
         }
 
         /// <summary>

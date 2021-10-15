@@ -22,16 +22,5 @@ namespace XchainDotnet.Thorchain
         /// <param name="params">The Transaction options</param>
         /// <returns>The trpansaction hash</returns>
         Task<string> Deposit(DepositParam @params);
-        /// <summary>
-        /// Set Explorer URLs
-        /// </summary>
-        /// <param name="explorerUrls">explorer</param>
-        void SetExplorerUrls(ExplorerUrls explorerUrls);
-        /// <summary>
-        /// Get Cosmos Sdk Client
-        /// </summary>
-        /// <returns>Cosmos SDK object</returns>
-        CosmosSdkClient GetCosmosClient();
-
     }
 }
