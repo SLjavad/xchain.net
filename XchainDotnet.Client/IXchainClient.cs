@@ -23,10 +23,6 @@ namespace XchainDotnet.Client
         /// </summary>
         Network? Network { get; set; }
         /// <summary>
-        /// Client address
-        /// </summary>
-        string Address { get; set; }
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="walletIndex"></param>

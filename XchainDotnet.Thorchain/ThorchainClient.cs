@@ -22,7 +22,6 @@ namespace XchainDotnet.Thorchain
     public class ThorchainClient : IXchainClient, IThorchianClient, IDisposable
     {
         private string _phrase;
-        private string _address;
         private ClientUrl _clientUrl;
         private Network? _network;
         private IPrivateKey _privateKey = null;
@@ -30,19 +29,6 @@ namespace XchainDotnet.Thorchain
         public string Phrase
         {
             get => _phrase;
-            set
-            {
-                if (_phrase != value)
-                {
-                    if (!XchainCrypto.ValidatePhrase(value))
-                    {
-                        throw new PhraseNotValidException(value, "Invalid Phrase");
-                    }
-                    _phrase = value;
-                    PrivateKey = null;
-                    Address = string.Empty;
-                }
-            }
         }
 
         public ClientUrl ClientUrl
@@ -70,44 +56,21 @@ namespace XchainDotnet.Thorchain
         /// Cosmos SDK Client in thorchain client
         /// </summary>
         public CosmosSdkClient CosmosClient { get; set; }
-        public string Address
-        {
-            get 
-            {
-                if (string.IsNullOrEmpty(_address))
-                {
-                    var address = CosmosClient.GetAddressFromPrivKey(PrivateKey);
-                    if (string.IsNullOrEmpty(address))
-                    {
-                        throw new Exception("Address not defined");
-                    }
-                    _address = address;
-                }
-                return _address;
-            }
-            set
-            {
-                _address = value;
-            }
-        }
         public ExplorerUrls ExplorerUrls { get; set; }
         /// <summary>
         /// Client Private Key
         /// </summary>
-        public IPrivateKey PrivateKey
+        public IPrivateKey GetPrivateKey(int index = 0)
         {
-            get => _privateKey;
-            set
+            if (_privateKey == null)
             {
-                if (_privateKey == null)
+                if (string.IsNullOrEmpty(_phrase))
                 {
-                    if (string.IsNullOrEmpty(_phrase))
-                    {
-                        throw new Exception("phrase not set");
-                    }
-                    _privateKey = CosmosClient.GetPrivKeyFromMnemonic(_phrase);
+                    throw new Exception("phrase not set");
                 }
             }
+            _privateKey = CosmosClient.GetPrivKeyFromMnemonic(_phrase, this.GetFullDerivationPath(index));
+            return _privateKey;
         }
 
         public RootDerivationPaths RootDerivationPaths { get; set; }
@@ -139,8 +102,31 @@ namespace XchainDotnet.Thorchain
 
             if (!string.IsNullOrEmpty(phrase))
             {
-                Phrase = phrase;
+                _phrase = phrase;
             }
+        }
+
+        public string SetPhrase(string phrase, int walletIndex)
+        {
+            if (this._phrase != phrase)
+            {
+                if (!XchainCrypto.ValidatePhrase(phrase))
+                {
+                    throw new Exception("Invalid Phrase");
+                }
+                this._phrase = phrase;
+            }
+            return this.GetAddress(walletIndex);
+        }
+
+        public string GetAddress(int? walletIndex = 0)
+        {
+            var address = this.CosmosClient.GetAddressFromMnemonic(this.Phrase, this.GetFullDerivationPath(walletIndex.Value));
+            if (string.IsNullOrEmpty(address))
+            {
+                throw new Exception("address not defined");
+            }
+            return address;
         }
 
         public string GetExplorerUrl()
@@ -150,7 +136,7 @@ namespace XchainDotnet.Thorchain
 
         public async Task<List<Balance>> GetBalance(string address = null, List<Asset> assets = null)
         {
-            var rawBalances = await CosmosClient.GetBalance(address ?? Address);
+            var rawBalances = await CosmosClient.GetBalance(address ?? this.GetAddress());
             var balances = rawBalances.Select(x => new Balance
             {
                 Amount = decimal.Parse(x.Amount),
@@ -180,6 +166,12 @@ namespace XchainDotnet.Thorchain
         public async Task<Fees> GetFees(FeeParams @params = null)
         {
             return await Task.FromResult(ThorchainUtils.GetDefaultFees());
+        }
+
+        public string GetFullDerivationPath(int index)
+        {
+            var res = $"{this.RootDerivationPaths.GetByNetwork(this.Network.Value)}index";
+            return res;
         }
 
         public async Task<Tx> GetTranasctionData(string txId, string assetAddress = null)
@@ -297,7 +289,7 @@ namespace XchainDotnet.Thorchain
                 var args = (TxHistoryParamFilter)txHistoryParams;
 
                 string messageAction = null;
-                var address = args?.Address ?? Address;
+                var address = args?.Address ?? this.GetAddress();
                 var offset = args?.Offset ?? 0;
                 var limit = args?.Limit ?? 10;
                 int? txMinHeight = null;
@@ -388,8 +380,7 @@ namespace XchainDotnet.Thorchain
 
         public void PurgeClient()
         {
-            Phrase = string.Empty;
-            Address = string.Empty;
+            _phrase = string.Empty;
             //this.PrivateKey = null;
         }
 
@@ -407,7 +398,7 @@ namespace XchainDotnet.Thorchain
                     prefix + "valconspub"
                   );
 
-                var assetBalance = await GetBalance(Address, new List<Asset> { transferParams.Asset });
+                var assetBalance = await GetBalance(this.GetAddress(transferParams.WalletIndex), new List<Asset> { transferParams.Asset });
                 var fee = await GetFees();
                 if (assetBalance.Count == 0 || assetBalance[0].Amount < transferParams.Amount + fee.Average)
                 {
@@ -416,8 +407,8 @@ namespace XchainDotnet.Thorchain
 
                 var transferResult = await CosmosClient.Transfer(new TransferParams
                 {
-                    PrivKey = PrivateKey,
-                    From = Address,
+                    PrivKey = this.GetPrivateKey(transferParams.WalletIndex),
+                    From = this.GetAddress(transferParams.WalletIndex),
                     To = transferParams.Recipient,
                     Amount = transferParams.Amount,
                     Asset = ThorchainUtils.GetDenom(transferParams.Asset),
@@ -447,13 +438,13 @@ namespace XchainDotnet.Thorchain
         {
             try
             {
-                var assetBalance = await GetBalance(Address, new List<Asset> { depostiParams.Asset });
+                var assetBalance = await GetBalance(this.GetAddress(depostiParams.WalletIndex), new List<Asset> { depostiParams.Asset });
                 if (assetBalance.Count == 0 || assetBalance[0].Amount < depostiParams.Amount + ThorchainConstantValues.DEFAULT_GAS_VALUE)
                 {
                     throw new InsufficientFunds(assetBalance[0].Amount, "insufficient funds");
                 }
 
-                var signer = Address;
+                var signer = this.GetAddress(depostiParams.WalletIndex);
 
                 var msgNativeTx = MsgNativeTx.MsgNativeFromJson(new List<MsgCoin>
             {
@@ -465,7 +456,7 @@ namespace XchainDotnet.Thorchain
             }, depostiParams.Memo, signer);
 
                 var unsignedStdTx = await BuildDepositTx(msgNativeTx);
-                var privateKey = PrivateKey;
+                var privateKey = this.GetPrivateKey(depostiParams.WalletIndex.Value);
                 var accAddress = AccAddress.FromBech32(signer);
                 var fee = unsignedStdTx.Fee;
 
@@ -542,16 +533,6 @@ namespace XchainDotnet.Thorchain
         public void Dispose()
         {
             PurgeClient();
-        }
-
-        public string SetPhrase(string phrase, int walletIndex)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string GetAddress(int? walletIndex)
-        {
-            throw new NotImplementedException();
         }
     }
 }

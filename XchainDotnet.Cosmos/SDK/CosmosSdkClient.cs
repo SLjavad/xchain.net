@@ -74,16 +74,23 @@ namespace XchainDotnet.Cosmos.SDK
             return AccAddress.FromPublicKey(privateKey.GetPublicKey()).ToBech32();
         }
 
+        public string GetAddressFromMnemonic(string mnemonic , string derivationPath)
+        {
+            SetPrefix();
+            var privkey = this.GetPrivKeyFromMnemonic(mnemonic, derivationPath);
+            return AccAddress.FromPublicKey(privkey.GetPublicKey()).ToBech32();
+        }
+
         /// <summary>
         /// Get private key from mnemonic
         /// </summary>
         /// <param name="mnemonic">mnemonic phrase</param>
         /// <returns>private key object</returns>
-        public IPrivateKey GetPrivKeyFromMnemonic(string mnemonic)
+        public IPrivateKey GetPrivKeyFromMnemonic(string mnemonic , string derivationPath)
         {
             Mnemonic mnemonic1 = new(mnemonic);
             var key = mnemonic1.DeriveExtKey();
-            key = key.Derive(new KeyPath(derivePath));
+            key = key.Derive(new KeyPath(derivationPath));
             return new PrivateKeySecp256k1(key.PrivateKey.ToBytes());
         }
 
