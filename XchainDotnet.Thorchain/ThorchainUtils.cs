@@ -375,5 +375,60 @@ namespace XchainDotnet.Thorchain
                 _ => throw new Exception("invalid network"),
             };
         }
+
+        public static TxData GetDepositTxDataFromLogs(List<TxLog> logs , string address)
+        {
+            var events = logs[0]?.Events;
+            if (events == null || events.Count == 0)
+            {
+                throw new Exception("No events in logs available");
+            }
+
+            List<TransferData> accum = new List<TransferData>();
+
+            List<TransferData> transferDataList = events.Aggregate(accum, (acc, txEvent) =>
+            {
+                if (txEvent.Type == "transfer")
+                {
+                    int index = 0;
+                    return txEvent.Attributes.Aggregate(acc, (acc2, attr) =>
+                    {
+                        if (index % 3 == 0)
+                        {
+                            acc2.Add(new TransferData { Amount = 0, Recipient = "", Sender = "" });
+                        }
+                        var newData = acc2.Last();
+                        if (attr.Key == "sender") newData.Sender = attr.Value;
+                        if (attr.Key == "recipient") newData.Recipient = attr.Value;
+                        if (attr.Key == "amount") newData.Amount = decimal.Parse(attr.Value.Replace("rune",""));
+                        return acc2;
+
+                    });
+                }
+                return acc;
+            });
+            
+            TxData txDataAcc = new();
+            txDataAcc.Type = TxType.transfer;
+
+            TxData txData = transferDataList.Where(x => x.Sender == address || x.Recipient == address)?
+                .Aggregate(txDataAcc, (acc, transferData) =>
+               {
+                   acc.From.Add(new TxFrom
+                   {
+                       From = transferData.Sender,
+                       Amount = transferData.Amount
+                   });
+                   acc.To.Add(new TxTo
+                   {
+                       To = transferData.Recipient,
+                       Amount = transferData.Amount
+                   });
+
+                   return acc;
+               });
+
+            return txData;
+        }
     }
 }

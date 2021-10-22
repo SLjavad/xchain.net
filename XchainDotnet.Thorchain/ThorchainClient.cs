@@ -179,31 +179,49 @@ namespace XchainDotnet.Thorchain
             try
             {
                 var txResult = await CosmosClient.TxHashGet(txId);
-                var action = ThorchainUtils.GetTxType(txResult.Data, "hex");
-
-                List<Tx> txs = new List<Tx>();
-
-                if (action == ThorchainConstantValues.MSG_DEPOSIT)
+                TxData txData = txResult.Logs != null && txResult.Logs.Count > 0 ? ThorchainUtils.GetDepositTxDataFromLogs(txResult.Logs, assetAddress) : null;
+                if (txData == null)
                 {
-                    var depositTx = await GetDepositTransaction(txId);
-                    depositTx.Date = DateTime.Parse(txResult.TimeStamp);
-                    txs.Add(depositTx);
-                }
-                else
-                {
-                    var result = ThorchainUtils.GetTxsFromHistory(new List<TxResponse>
-                    {
-                        txResult
-                    }, Network.Value);
-
-                    txs.AddRange(result);
+                    throw new Exception($"Failed to get transaction data (tx-hash: {txId})");
                 }
 
-                if (txs.Count == 0)
+                var tx = new Tx
                 {
-                    throw new Exception("transaction not found");
-                }
-                return txs[0];
+                    Asset = new AssetRune(),
+                    Date = DateTime.Parse(txResult.TimeStamp),
+                    From = txData.From,
+                    Hash = txId,
+                    To = txData.To,
+                    Type = txData.Type
+                };
+
+                return tx; // must be tested 
+
+                //var action = ThorchainUtils.GetTxType(txResult.Data, "hex");
+
+                //List<Tx> txs = new List<Tx>();
+
+                //if (action == ThorchainConstantValues.MSG_DEPOSIT)
+                //{
+                //    var depositTx = await GetDepositTransaction(txId);
+                //    depositTx.Date = DateTime.Parse(txResult.TimeStamp);
+                //    txs.Add(depositTx);
+                //}
+                //else
+                //{
+                //    var result = ThorchainUtils.GetTxsFromHistory(new List<TxResponse>
+                //    {
+                //        txResult
+                //    }, Network.Value);
+
+                //    txs.AddRange(result);
+                //}
+
+                //if (txs.Count == 0)
+                //{
+                //    throw new Exception("transaction not found");
+                //}
+                //return txs[0];
             }
             catch (Exception ex)
             {
@@ -277,14 +295,14 @@ namespace XchainDotnet.Thorchain
             try
             {
                 var prefix = ThorchainUtils.GetPrefix(Network.Value);
-                AccAddress.SetBech32Prefix(
-                    prefix,
-                    prefix + "pub",
-                    prefix + "valoper",
-                    prefix + "valoperpub",
-                    prefix + "valcons",
-                    prefix + "valconspub"
-                  );
+                //AccAddress.SetBech32Prefix(
+                //    prefix,
+                //    prefix + "pub",
+                //    prefix + "valoper",
+                //    prefix + "valoperpub",
+                //    prefix + "valcons",
+                //    prefix + "valconspub"
+                //  );
 
                 var args = (TxHistoryParamFilter)txHistoryParams;
 
@@ -351,8 +369,9 @@ namespace XchainDotnet.Thorchain
                     });
                 history = history.Where((args?.FilterFn) ?? (tx =>
                     {
-                        var action = ThorchainUtils.GetTxType(tx.TxResult.Data, "base64");
-                        return action == ThorchainConstantValues.MSG_DEPOSIT || action == ThorchainConstantValues.MSG_SEND;
+                        return tx != null;
+                        //var action = ThorchainUtils.GetTxType(tx.TxResult.Data, "base64");
+                        //return action == ThorchainConstantValues.MSG_DEPOSIT || action == ThorchainConstantValues.MSG_SEND;
                     })).Take(ThorchainConstantValues.MAX_TX_COUNT).ToList();
 
                 var total = history.Count;
@@ -458,9 +477,6 @@ namespace XchainDotnet.Thorchain
                 var unsignedStdTx = await BuildDepositTx(msgNativeTx);
                 var privateKey = this.GetPrivateKey(depostiParams.WalletIndex.Value);
                 var accAddress = AccAddress.FromBech32(signer);
-                var fee = unsignedStdTx.Fee;
-
-                fee.Gas = "10000000";
 
                 var result = await CosmosClient.SignAndBroadcast(unsignedStdTx, privateKey, accAddress);
                 if (result != null && !string.IsNullOrEmpty(result.Data) && !string.IsNullOrEmpty(result.RawLog) && !string.IsNullOrEmpty(result.GasUsed) && !string.IsNullOrEmpty(result.GasWanted))
@@ -514,7 +530,14 @@ namespace XchainDotnet.Thorchain
                     throw new Exception("Invalid client url");
                 }
 
-                var unsignedStdTx = StdTx.FromJson(response.Value.Msg, response.Value.Fee, new List<StdSignature>(), "");
+                var fee = response.Value?.Fee ?? new StdTxFee
+                {
+                    Amount = new List<Coin>()
+                };
+
+                fee.Gas = ThorchainConstantValues.DEPOSIT_GAS_VALUE.ToString();
+
+                var unsignedStdTx = StdTx.FromJson(response.Value.Msg, fee, new List<StdSignature>(), "");
 
                 return unsignedStdTx;
 

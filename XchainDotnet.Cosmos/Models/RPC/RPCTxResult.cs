@@ -34,8 +34,8 @@ namespace XchainDotnet.Cosmos.Models.RPC
         public string Hash { get; set; }
         [JsonPropertyName("height")]
         public string Height { get; set; }
-        [JsonPropertyName("number")]
-        public int Number { get; set; }
+        [JsonPropertyName("index")]
+        public int Index { get; set; }
         [JsonPropertyName("tx")]
         public string Tx { get; set; }
         [JsonPropertyName("tx_result")]
