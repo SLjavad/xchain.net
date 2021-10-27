@@ -337,14 +337,9 @@ namespace XchainDotnet.Thorchain
         public static Fees GetDefaultFees()
         {
             var fee = ThorchainConstantValues.DEFAULT_GAS_VALUE;
+            var res = FeeUtil.SingleFee(FeeType.@base, fee);
 
-            return new Fees
-            {
-                Type = FeeType.@base,
-                Average = fee,
-                Fast = fee,
-                Fastest = fee
-            };
+            return res;
         }
 
         /// <summary>

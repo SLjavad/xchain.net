@@ -295,14 +295,14 @@ namespace XchainDotnet.Thorchain
             try
             {
                 var prefix = ThorchainUtils.GetPrefix(Network.Value);
-                //AccAddress.SetBech32Prefix(
-                //    prefix,
-                //    prefix + "pub",
-                //    prefix + "valoper",
-                //    prefix + "valoperpub",
-                //    prefix + "valcons",
-                //    prefix + "valconspub"
-                //  );
+                AccAddress.SetBech32Prefix(
+                    prefix,
+                    prefix + "pub",
+                    prefix + "valoper",
+                    prefix + "valoperpub",
+                    prefix + "valcons",
+                    prefix + "valconspub"
+                  );
 
                 var args = (TxHistoryParamFilter)txHistoryParams;
 
