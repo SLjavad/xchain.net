@@ -309,7 +309,7 @@ namespace XchainDotnet.Cosmos.SDK
 
                 var postTxResult = await Auth.TxPost(this, new BroadcastTxParams
                 {
-                    Mode = "block",
+                    Mode = "sync",
                     Tx = signedStdTx
                 });
 
