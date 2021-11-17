@@ -18,8 +18,8 @@ namespace XchainDotnet.Cosmos.Test.Fixture
         {
             CosmosMainnetClient = new CosmosSdkClient("https://api.cosmos.network", "cosmoshub-3", "cosmos");
             CosmosTestnetClient = new CosmosSdkClient("http://lcd.gaia.bigdipper.live:1317", "gaia-3a", "cosmos");
-            ThorMainnetClient = new CosmosSdkClient("http://104.248.96.152:1317", "thorchain", "thor", "44'/931'/0'/0/0");
-            ThorTestnetClient = new CosmosSdkClient("http://13.238.212.224:1317", "thorchain", "tthor", "44'/931'/0'/0/0");
+            ThorMainnetClient = new CosmosSdkClient("http://104.248.96.152:1317", "thorchain", "thor");
+            ThorTestnetClient = new CosmosSdkClient("http://13.238.212.224:1317", "thorchain", "tthor");
         }
     }
 }

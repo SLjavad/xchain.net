@@ -92,7 +92,7 @@ namespace XchainDotnet.Thorchain
             _network = network;
             ClientUrl = clientUrl ?? ThorchainUtils.GetDefaultClientUrl();
             ExplorerUrls = explorerUrls ?? ThorchainUtils.GetDefaultExplorerUrl();
-            CosmosClient = new CosmosSdkClient(ClientUrl.GetByNetwork(Network.Value).Node, "thorchain", ThorchainUtils.GetPrefix(Network.Value), ThorchainConstantValues.DerivePath);
+            CosmosClient = new CosmosSdkClient(ClientUrl.GetByNetwork(Network.Value).Node, "thorchain", ThorchainUtils.GetPrefix(Network.Value));
 
             RootDerivationPaths = rootDerivationPaths ?? new RootDerivationPaths
             {

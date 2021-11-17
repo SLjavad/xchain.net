@@ -12,7 +12,7 @@ namespace XchainDotnet.Thorchain.Test.Fixture
         public SdkFixture()
         {
             var phrase = "rural bright ball negative already grass good grant nation screen model pizza";
-            Client = new ThorchainClient(phrase, null, null, XchainDotnet.Client.Models.Network.testnet);
+            Client = new ThorchainClient(phrase, null, null,null, XchainDotnet.Client.Models.Network.testnet);
         }
     }
 }

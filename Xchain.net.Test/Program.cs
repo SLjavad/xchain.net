@@ -26,15 +26,15 @@ namespace Xchain.net.Test
         private static void testPrivKey()
         {
             string mnemonic = "rural bright ball negative already grass good grant nation screen model pizza";
-            var client = new CosmosSdkClient("test", "thorchain", "tthor", "44'/931'/0'/0/0");
-            var key = client.GetPrivKeyFromMnemonic(mnemonic);
+            var client = new CosmosSdkClient("test", "thorchain", "tthor");
+            var key = client.GetPrivKeyFromMnemonic(mnemonic, "44'/931'/0'/0/0");
             string hex = BitConverter.ToString(key.ToBuffer()).Replace("-", " ");
         }
 
         private static async Task TestgetTransactionData()
         {
             string mnemonic = "rural bright ball negative already grass good grant nation screen model pizza";
-            var thorClient = new ThorchainClient(mnemonic, null, null, Network.testnet);
+            var thorClient = new ThorchainClient(mnemonic, null, null,null, Network.testnet);
             var res = await thorClient.GetTranasctionData("DFEC1DC8ED2F7D5C2578E31E8D58B53688080097EF6806766D3074851E6C25A9");
             Console.WriteLine(res);
         }
@@ -44,7 +44,7 @@ namespace Xchain.net.Test
             var send_amount = 10000;
             var memo = "swap:BNB.BNB:tbnb1ftzhmpzr4t8ta3etu4x7nwujf9jqckp3th2lh0";
             string mnemonic = "rural bright ball negative already grass good grant nation screen model pizza";
-            var client = new ThorchainClient(mnemonic, null, null, Network.testnet);
+            var client = new ThorchainClient(mnemonic, null, null, null, Network.testnet);
             var result = await client.Deposit(new DepositParam
             {
                 Amount = send_amount,
@@ -59,7 +59,7 @@ namespace Xchain.net.Test
             var memo = "transfer";
             string mnemonic = "rural bright ball negative already grass good grant nation screen model pizza";
             var to_address = "tthor1pttyuys2muhj674xpr9vutsqcxj9hepy4ddueq";
-            var client = new ThorchainClient(mnemonic, null, null, Network.testnet);
+            var client = new ThorchainClient(mnemonic, null, null, null, Network.testnet);
             var result = await client.Transfer(new TxParams
             {
                 Asset = new AssetRune(),
@@ -76,7 +76,7 @@ namespace Xchain.net.Test
             var memo = "transfer";
             string mnemonic = "rural bright ball negative already grass good grant nation screen model pizza";
             var address = "tthor13gym97tmw3axj3hpewdggy2cr288d3qffr8skg";
-            var client = new ThorchainClient(mnemonic, null, null, Network.testnet);
+            var client = new ThorchainClient(mnemonic, null, null, null, Network.testnet);
             var result = await client.GetTransactions(new TxHistoryParamFilter
             {
                 Address = address,

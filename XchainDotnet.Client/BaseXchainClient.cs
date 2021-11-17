@@ -123,18 +123,14 @@ namespace XchainDotnet.Client
         }
 
         public abstract string GetAddress(int? walletIndex);
-
         public abstract Task<List<Balance>> GetBalance(string address = "", List<Asset> assets = null);
-
         public abstract string GetExplorerAddressUrl(string address);
-
         public abstract string GetExplorerTxUrl(string txId);
-
         public abstract Task<Fees> GetFees(FeeParams @params = null);
-
         public abstract Task<Tx> GetTranasctionData(string txId, string assetAddress = null);
         public abstract Task<TxPage> GetTransactions(TxHistoryParams txHistoryParams = null);
         public abstract Task<string> Transfer(TxParams transferParams);
         public abstract bool ValidateAddress(string address);
+        public abstract string GetExplorerUrl();
     }
 }
