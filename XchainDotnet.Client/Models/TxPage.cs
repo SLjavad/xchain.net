@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace XchainDotnet.Client.Models
 {
@@ -10,10 +11,12 @@ namespace XchainDotnet.Client.Models
         /// <summary>
         /// Total amount of result
         /// </summary>
+        [JsonPropertyName("total")]
         public int Total { get; set; }
         /// <summary>
         /// Transaction list of current page
         /// </summary>
+        [JsonPropertyName("txs")]
         public List<Tx> Txs { get; set; }
     }
 }

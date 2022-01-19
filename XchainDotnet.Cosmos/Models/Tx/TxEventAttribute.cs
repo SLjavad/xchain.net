@@ -8,5 +8,7 @@ namespace XchainDotnet.Cosmos.Models.Tx
         public string Key { get; set; }
         [JsonPropertyName("value")]
         public string Value { get; set; }
+        [JsonPropertyName("index")]
+        public bool Index { get; set; }
     }
 }

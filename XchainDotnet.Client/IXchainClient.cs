@@ -10,19 +10,28 @@ namespace XchainDotnet.Client
         /// <summary>
         /// Client Phrase
         /// </summary>
-        string Phrase { get; set; }
+        string Phrase { get; }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="phrase"></param>
+        /// <param name="walletIndex"></param>
+        /// <returns></returns>
+        string SetPhrase(string phrase, int walletIndex);
         /// <summary>
         /// Network type (mainnet or testnet)
         /// </summary>
-        Network Network { get; set; }
+        Network? Network { get; set; }
         /// <summary>
-        /// Client address
+        /// 
         /// </summary>
-        string Address { get; set; }
+        /// <param name="walletIndex"></param>
+        /// <returns></returns>
+        string GetAddress(int? walletIndex);
         /// <summary>
-        /// Explorer URL object
+        /// Get the Explorer URL
         /// </summary>
-        ExplorerUrl ExplorerUrl { get; set; }
+        string GetExplorerUrl();
         // Methods
         /// <summary>
         /// Get the explorer url for the given address

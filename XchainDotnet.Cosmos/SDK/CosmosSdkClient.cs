@@ -23,8 +23,7 @@ namespace XchainDotnet.Cosmos.SDK
     {
         public readonly string server;
         public readonly string chainId; //TODO: change to property
-        private readonly string prefix;
-        private readonly string derivePath;
+        private string prefix;
 
         private const string BASE_PATH = "https://api.cosmos.network";
 
@@ -35,12 +34,11 @@ namespace XchainDotnet.Cosmos.SDK
         /// <param name="chainId">chain id</param>
         /// <param name="prefix">prefix</param>
         /// <param name="derivePath">derivation path</param>
-        public CosmosSdkClient(string server, string chainId, string prefix = "cosmos", string derivePath = "44'/118'/0'/0/0")
+        public CosmosSdkClient(string server, string chainId, string prefix = "cosmos")
         {
             this.server = server;
             this.chainId = chainId;
             this.prefix = prefix;
-            this.derivePath = derivePath;
         }
 
         /// <summary>
@@ -57,6 +55,12 @@ namespace XchainDotnet.Cosmos.SDK
                 prefix + "valconspub");
         }
 
+        public void UpdatePrefix(string prefix)
+        {
+            this.prefix = prefix;
+            this.SetPrefix();
+        }
+
         /// <summary>
         /// Get bech32 address from private key
         /// </summary>
@@ -68,16 +72,23 @@ namespace XchainDotnet.Cosmos.SDK
             return AccAddress.FromPublicKey(privateKey.GetPublicKey()).ToBech32();
         }
 
+        public string GetAddressFromMnemonic(string mnemonic , string derivationPath)
+        {
+            SetPrefix();
+            var privkey = this.GetPrivKeyFromMnemonic(mnemonic, derivationPath);
+            return AccAddress.FromPublicKey(privkey.GetPublicKey()).ToBech32();
+        }
+
         /// <summary>
         /// Get private key from mnemonic
         /// </summary>
         /// <param name="mnemonic">mnemonic phrase</param>
         /// <returns>private key object</returns>
-        public IPrivateKey GetPrivKeyFromMnemonic(string mnemonic)
+        public IPrivateKey GetPrivKeyFromMnemonic(string mnemonic , string derivationPath)
         {
             Mnemonic mnemonic1 = new(mnemonic);
             var key = mnemonic1.DeriveExtKey();
-            key = key.Derive(new KeyPath(derivePath));
+            key = key.Derive(new KeyPath(derivationPath));
             return new PrivateKeySecp256k1(key.PrivateKey.ToBytes());
         }
 
@@ -296,7 +307,7 @@ namespace XchainDotnet.Cosmos.SDK
 
                 var postTxResult = await Auth.TxPost(this, new BroadcastTxParams
                 {
-                    Mode = "block",
+                    Mode = "sync",
                     Tx = signedStdTx
                 });
 

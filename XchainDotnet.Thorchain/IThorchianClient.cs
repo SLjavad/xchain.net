@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using XchainDotnet.Cosmos.SDK;
 using XchainDotnet.Thorchain.Models;
 
 namespace XchainDotnet.Thorchain
@@ -14,13 +15,12 @@ namespace XchainDotnet.Thorchain
         /// </summary>
         /// <param name="node">Node address</param>
         /// <returns>The explorer url for the given node</returns>
-        string GetExplorerNodeUrl(string node);
+        //string GetExplorerNodeUrl(string node);
         /// <summary>
         /// Deposit Method , Transaction with MsgNativeTx
         /// </summary>
         /// <param name="params">The Transaction options</param>
         /// <returns>The trpansaction hash</returns>
         Task<string> Deposit(DepositParam @params);
-
     }
 }

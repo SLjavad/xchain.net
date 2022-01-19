@@ -30,14 +30,18 @@ namespace XchainDotnet.Thorchain.Tests
     {
         private readonly SdkFixture sdkFixture;
         private readonly ThorchainClient thorClient;
+        private readonly ThorchainClient thorMainClient;
         private string phrase = "rural bright ball negative already grass good grant nation screen model pizza";
-        private string mainnetAddress = "thor19kacmmyuf2ysyvq3t9nrl9495l5cvktjs0yfws";
-        private string testnetAddress = "tthor19kacmmyuf2ysyvq3t9nrl9495l5cvktj5c4eh4";
+        private string mainnet_address_path0 = "thor19kacmmyuf2ysyvq3t9nrl9495l5cvktjs0yfws";
+        private string mainnet_address_path1 = "thor1hrf34g3lxwvpk7gjte0xvahf3txnq8ecgaf4nc";
+        private string testnet_address_path0 = "tthor19kacmmyuf2ysyvq3t9nrl9495l5cvktj5c4eh4";
+        private string testnet_address_path1 = "tthor1hrf34g3lxwvpk7gjte0xvahf3txnq8ecv2c92a";
 
         public XchainThorchainTest(SdkFixture sdkFixture)
         {
             var phrase = "rural bright ball negative already grass good grant nation screen model pizza";
-            this.thorClient = new ThorchainClient(phrase, null, null, XchainDotnet.Client.Models.Network.testnet);
+            this.thorClient = new ThorchainClient(phrase, null, null,null, XchainDotnet.Client.Models.Network.testnet);
+            this.thorMainClient = new ThorchainClient(phrase, null, null,null, XchainDotnet.Client.Models.Network.mainnet);
         }
 
         BroadcastTxParams txsPost;
@@ -54,7 +58,7 @@ namespace XchainDotnet.Thorchain.Tests
                         (httpRequestMessage, cancellationToken) =>
                         {
                             if (httpRequestMessage.Method == HttpMethod.Post 
-                            && httpRequestMessage.RequestUri.OriginalString == $"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network).Node}/txs")
+                            && httpRequestMessage.RequestUri.OriginalString == $"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network.Value).Node}/txs")
                             {
                                 txsPost = httpRequestMessage.Content
                                     .ReadFromJsonAsync<BroadcastTxParams>()
@@ -70,91 +74,108 @@ namespace XchainDotnet.Thorchain.Tests
         [Fact]
         public void Should_start_with_empty_wallet()
         {
-            var thorClientEmptyMain = new ThorchainClient(phrase, null, null, Client.Models.Network.mainnet);
-            var addressMain = thorClientEmptyMain.Address;
-            Assert.Equal(mainnetAddress, addressMain);
+            var thorClientEmptyMain = new ThorchainClient(phrase, null, null,null, Client.Models.Network.mainnet);
+            var addressMain = thorClientEmptyMain.GetAddress();
+            Assert.Equal(mainnet_address_path0, addressMain);
 
-            var thorClientEmptyTest = new ThorchainClient(phrase, null, null, Client.Models.Network.testnet);
-            var addressTest = thorClientEmptyTest.Address;
-            Assert.Equal(testnetAddress, addressTest);
+            var thorClientEmptyTest = new ThorchainClient(phrase, null, null,null, Client.Models.Network.testnet);
+            var addressTest = thorClientEmptyTest.GetAddress();
+            Assert.Equal(testnet_address_path0, addressTest);
+        }
+
+        [Fact]
+        public void should_derive_address_accordingly_to_the_user_param()
+        {
+            var thorClientEmptyMain = new ThorchainClient(phrase, null, null, null, Client.Models.Network.mainnet);
+            var addressMain = thorClientEmptyMain.GetAddress();
+            Assert.Equal(mainnet_address_path1, addressMain);
+
+            var viaSetPhraseAddr1 = thorClientEmptyMain.GetAddress(1);
+            Assert.Equal(mainnet_address_path0, viaSetPhraseAddr1);
+
+            var thorClientEmptyTest = new ThorchainClient(phrase, null, null, null, Client.Models.Network.testnet);
+            var addressTest = thorClientEmptyTest.GetAddress();
+            Assert.Equal(testnet_address_path0, addressTest);
+
+            var viaSetPhraseAddr1Test = thorClientEmptyTest.GetAddress(1);
+            Assert.Equal(testnet_address_path1, viaSetPhraseAddr1Test);
+
+            thorClientEmptyMain = new ThorchainClient(phrase, null, null, null, Client.Models.Network.mainnet);
+            var addressMain1 = thorClientEmptyMain.GetAddress(1);
+            Assert.Equal(mainnet_address_path0, addressMain1);
+
+            thorClientEmptyTest = new ThorchainClient(phrase, null, null, null, Client.Models.Network.testnet);
+            var addressTest1 = thorClientEmptyTest.GetAddress(1);
+            Assert.Equal(testnet_address_path1, addressTest1);
         }
 
         [Fact]
         public void Throw_error_when_invalid_phrase()
         {
-            Assert.Throws<PhraseNotValidException>(() => new ThorchainClient("invalid phrase", null, null, Client.Models.Network.mainnet));
-            Assert.Throws<PhraseNotValidException>(() => new ThorchainClient("invalid phrase", null, null, Client.Models.Network.testnet));
+            Assert.Throws<PhraseNotValidException>(() => new ThorchainClient("invalid phrase", null, null,null, Client.Models.Network.mainnet));
+            Assert.Throws<PhraseNotValidException>(() => new ThorchainClient("invalid phrase", null, null,null, Client.Models.Network.testnet));
         }
 
         [Fact]
         public void Should_have_right_address()
         {
-            Assert.Equal(testnetAddress, this.thorClient.Address);
+            Assert.Equal(testnet_address_path0, this.thorClient.GetAddress());
 
             this.thorClient.Network = Network.mainnet;
-            Assert.Equal(mainnetAddress, this.thorClient.Address);
+            Assert.Equal(mainnet_address_path0, this.thorClient.GetAddress());
         }
 
         [Fact]
         public void Should_allow_to_get_the_CosmosSdkClient()
         {
-            Assert.IsType<CosmosSdkClient>(this.thorClient.ThorClient);
+            Assert.IsType<CosmosSdkClient>(this.thorClient.CosmosClient);
         }
 
         [Fact]
         public void Should_Update_Net()
         {
-            var client = new ThorchainClient(phrase, null, null, Client.Models.Network.mainnet);
+            var client = new ThorchainClient(phrase, null, null,null, Client.Models.Network.mainnet);
             client.Network = Network.testnet;
             Assert.Equal(Network.testnet, client.Network);
 
-            var address = client.Address;
-            Assert.Equal(testnetAddress, address);
+            var address = client.GetAddress();
+            Assert.Equal(testnet_address_path0, address);
         }
 
         [Fact]
         public void Should_Init_Should_have_right_prefix()
         {
-            Assert.True(this.thorClient.ValidateAddress(this.thorClient.Address));
+            Assert.True(this.thorClient.ValidateAddress(this.thorClient.GetAddress()));
 
             this.thorClient.Network = Network.mainnet;
-            Assert.True(this.thorClient.ValidateAddress(this.thorClient.Address));
+            Assert.True(this.thorClient.ValidateAddress(this.thorClient.GetAddress()));
         }
 
         [Fact]
         public void Should_return_valid_explorer_url()
         {
-            Assert.Equal("https://testnet.thorchain.net/#", this.thorClient.ExplorerUrl.GetExplorerUrlByNetwork(this.thorClient.Network));
+            Assert.Equal("https://viewblock.io/thorchain?network=testnet", this.thorClient.GetExplorerUrl());
 
             this.thorClient.Network = Network.mainnet;
-            Assert.Equal("https://thorchain.net/#", this.thorClient.ExplorerUrl.GetExplorerUrlByNetwork(this.thorClient.Network));
+            Assert.Equal("https://viewblock.io/thorchain", this.thorClient.GetExplorerUrl());
         }
 
         [Fact]
         public void Should_return_valid_explorer_address_url()
         {
-            Assert.Equal("https://testnet.thorchain.net/#/address/anotherTestAddressHere", this.thorClient.GetExplorerAddressUrl("anotherTestAddressHere"));
+            Assert.Equal("https://viewblock.io/thorchain/address/anotherTestAddressHere?network=testnet", this.thorClient.GetExplorerAddressUrl("anotherTestAddressHere"));
 
             this.thorClient.Network = Network.mainnet;
-            Assert.Equal("https://thorchain.net/#/address/testAddressHere", this.thorClient.GetExplorerAddressUrl("testAddressHere"));
+            Assert.Equal("https://viewblock.io/thorchain/address/testAddressHere", this.thorClient.GetExplorerAddressUrl("testAddressHere"));
         }
 
         [Fact]
         public void Should_return_valid_explorer_tx_url()
         {
-            Assert.Equal("https://testnet.thorchain.net/#/txs/anotherTestTxHere", this.thorClient.GetExplorerTxUrl("anotherTestTxHere"));
+            Assert.Equal("https://viewblock.io/thorchain/tx/anotherTestTxHere?network=testnet", this.thorClient.GetExplorerTxUrl("anotherTestTxHere"));
 
             this.thorClient.Network = Network.mainnet;
-            Assert.Equal("https://thorchain.net/#/txs/testTxHere", this.thorClient.GetExplorerTxUrl("testTxHere"));
-        }
-
-        [Fact]
-        public void Should_return_valid_explorer_node_url()
-        {
-            Assert.Equal("https://testnet.thorchain.net/#/nodes/anotherTestNodeHere", this.thorClient.GetExplorerNodeUrl("anotherTestNodeHere"));
-
-            this.thorClient.Network = Network.mainnet;
-            Assert.Equal("https://thorchain.net/#/nodes/testNodeHere", this.thorClient.GetExplorerNodeUrl("testNodeHere"));
+            Assert.Equal("https://viewblock.io/thorchain/tx/testTxHere", this.thorClient.GetExplorerTxUrl("testTxHere"));
         }
 
         [Fact]
@@ -175,10 +196,10 @@ namespace XchainDotnet.Thorchain.Tests
             };
 
             this.thorClient.Network = Network.mainnet;
-            Assert.Equal("new mainnet client", this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network).Node);
+            Assert.Equal("new mainnet client", this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network.Value).Node);
 
             this.thorClient.Network = Network.testnet;
-            Assert.Equal("new testnet client", this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network).Node);
+            Assert.Equal("new testnet client", this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network.Value).Node);
         }
 
         [Fact]
@@ -193,8 +214,8 @@ namespace XchainDotnet.Thorchain.Tests
             var mocks = new Dictionary<Expression<Func<HttpRequestMessage, bool>>, HttpResponseMessage>
             { {
                     x => x.Method == HttpMethod.Get
-                          && x.RequestUri.OriginalString == $"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network).Node}" +
-                          $"/bank/balances/{testnetAddress}",
+                          && x.RequestUri.OriginalString == $"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network.Value).Node}" +
+                          $"/bank/balances/{testnet_address_path0}",
                     new HttpResponseMessage
                     {
                         Content = new StringContent(tempres)
@@ -231,7 +252,7 @@ namespace XchainDotnet.Thorchain.Tests
             var mocks = new Dictionary<Expression<Func<HttpRequestMessage, bool>>, HttpResponseMessage>
             { {
                     x => x.Method == HttpMethod.Get
-                          && x.RequestUri.OriginalString == $"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network).Node}" +
+                          && x.RequestUri.OriginalString == $"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network.Value).Node}" +
                           $"/bank/balances/thor147jegk6e9sum7w3svy3hy4qme4h6dqdkgxhda5",
                     new HttpResponseMessage
                     {
@@ -254,7 +275,7 @@ namespace XchainDotnet.Thorchain.Tests
         [Fact]
         public async Task Has_an_empty_tx_history()
         {
-            this.thorClient.Network = Network.mainnet;
+            //this.thorClient.Network = Network.mainnet;
 
             var expected = new TxPage
             {
@@ -276,7 +297,7 @@ namespace XchainDotnet.Thorchain.Tests
             var mocks = new Dictionary<Expression<Func<HttpRequestMessage, bool>>, HttpResponseMessage>
             { {
                     x => x.Method == HttpMethod.Get
-                          && x.RequestUri.OriginalString.StartsWith($"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network).RPC}" +
+                          && x.RequestUri.OriginalString.StartsWith($"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network.Value).RPC}" +
                           $"/tx_search"),
                     new HttpResponseMessage
                     {
@@ -296,7 +317,7 @@ namespace XchainDotnet.Thorchain.Tests
             });
 
             httpClient.Protected().Verify("SendAsync", Times.Exactly(2) , ItExpr.Is<HttpRequestMessage>(x => x.Method == HttpMethod.Get
-                          && x.RequestUri.OriginalString.StartsWith($"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network).RPC}" +
+                          && x.RequestUri.OriginalString.StartsWith($"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network.Value).RPC}" +
                           $"/tx_search")), ItExpr.IsAny<CancellationToken>());
 
             Assert.Equal(expected.Total, result.Total);
@@ -400,7 +421,7 @@ namespace XchainDotnet.Thorchain.Tests
             var mocks = new Dictionary<Expression<Func<HttpRequestMessage, bool>>, HttpResponseMessage>
             { {
                     x => x.Method == HttpMethod.Get
-                          && x.RequestUri.OriginalString.StartsWith($"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network).RPC}" +
+                          && x.RequestUri.OriginalString.StartsWith($"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network.Value).RPC}" +
                           $"/tx_search"),
                     new HttpResponseMessage
                     {
@@ -453,7 +474,7 @@ namespace XchainDotnet.Thorchain.Tests
             });
 
             mocks.Add(x =>x.Method == HttpMethod.Get
-                        && x.RequestUri.OriginalString == $"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network).Node}/txs/{hash}",
+                        && x.RequestUri.OriginalString == $"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network.Value).Node}/txs/{hash}",
                     new HttpResponseMessage
                     {
                         Content = new StringContent(tempres)
@@ -471,7 +492,7 @@ namespace XchainDotnet.Thorchain.Tests
             });
 
             httpClient.Protected().Verify("SendAsync", Times.Exactly(2), ItExpr.Is<HttpRequestMessage>(x => x.Method == HttpMethod.Get
-                         && x.RequestUri.OriginalString.StartsWith($"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network).RPC}" +
+                         && x.RequestUri.OriginalString.StartsWith($"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network.Value).RPC}" +
                          $"/tx_search")), ItExpr.IsAny<CancellationToken>());
 
             Assert.Equal(1, result.Total);
@@ -524,8 +545,8 @@ namespace XchainDotnet.Thorchain.Tests
                 {
                     x =>
                         x.Method == HttpMethod.Get
-                        && x.RequestUri.OriginalString == $"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network).Node}" +
-                        $"/auth/accounts/{testnetAddress}",
+                        && x.RequestUri.OriginalString == $"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network.Value).Node}" +
+                        $"/auth/accounts/{testnet_address_path0}",
                     new HttpResponseMessage
                     {
                         Content = new StringContent(tempres)
@@ -548,8 +569,8 @@ namespace XchainDotnet.Thorchain.Tests
 
             mocks.Add(
                     x => x.Method == HttpMethod.Get
-                          && x.RequestUri.OriginalString == $"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network).Node}" +
-                          $"/bank/balances/{testnetAddress}",
+                          && x.RequestUri.OriginalString == $"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network.Value).Node}" +
+                          $"/bank/balances/{testnet_address_path0}",
                     new HttpResponseMessage
                     {
                         Content = new StringContent(tempres)
@@ -559,7 +580,7 @@ namespace XchainDotnet.Thorchain.Tests
 
             mocks.Add(x =>
                        x.Method == HttpMethod.Post
-                       && x.RequestUri.OriginalString == $"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network).Node}/txs"
+                       && x.RequestUri.OriginalString == $"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network.Value).Node}/txs"
                        , new HttpResponseMessage
                        {
                            Content = new StringContent(expectedTxsPostResult)
@@ -582,7 +603,7 @@ namespace XchainDotnet.Thorchain.Tests
             Assert.Equal("EA2FAC9E82290DCB9B1374B4C95D7C4DD8B9614A96FACD38031865EB1DBAE24D", res);
             Assert.Single(txsPost.Tx.Msg);
             Assert.Equal("transfer", txsPost.Tx.Memo);
-            Assert.Equal(testnetAddress, ((AminoWrapper<MsgSend>)txsPost.Tx.Msg[0]).Value.FromAddress.ToBech32());
+            Assert.Equal(testnet_address_path0, ((AminoWrapper<MsgSend>)txsPost.Tx.Msg[0]).Value.FromAddress.ToBech32());
             Assert.Equal("tthor19kacmmyuf2ysyvq3t9nrl9495l5cvktj5c4eh4", ((AminoWrapper<MsgSend>)txsPost.Tx.Msg[0]).Value.FromAddress.ToBech32());
             Assert.Equal("10000", ((AminoWrapper<MsgSend>)txsPost.Tx.Msg[0]).Value.Amount[0].Amount);
             Assert.Equal("rune", ((AminoWrapper<MsgSend>)txsPost.Tx.Msg[0]).Value.Amount[0].Denom);
@@ -633,8 +654,8 @@ namespace XchainDotnet.Thorchain.Tests
                 {
                     x =>
                         x.Method == HttpMethod.Get
-                        && x.RequestUri.OriginalString == $"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network).Node}" +
-                        $"/auth/accounts/{testnetAddress}",
+                        && x.RequestUri.OriginalString == $"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network.Value).Node}" +
+                        $"/auth/accounts/{testnet_address_path0}",
                     new HttpResponseMessage
                     {
                         Content = new StringContent(tempres)
@@ -657,8 +678,8 @@ namespace XchainDotnet.Thorchain.Tests
 
             mocks.Add(
                     x => x.Method == HttpMethod.Get
-                          && x.RequestUri.OriginalString == $"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network).Node}" +
-                          $"/bank/balances/{testnetAddress}",
+                          && x.RequestUri.OriginalString == $"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network.Value).Node}" +
+                          $"/bank/balances/{testnet_address_path0}",
                     new HttpResponseMessage
                     {
                         Content = new StringContent(tempres)
@@ -668,7 +689,7 @@ namespace XchainDotnet.Thorchain.Tests
 
             mocks.Add(x =>
                        x.Method == HttpMethod.Post
-                       && x.RequestUri.OriginalString == $"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network).Node}/txs"
+                       && x.RequestUri.OriginalString == $"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network.Value).Node}/txs"
                        , new HttpResponseMessage
                        {
                            Content = new StringContent(expectedTxsPostResult)
@@ -712,7 +733,7 @@ namespace XchainDotnet.Thorchain.Tests
 
             mocks.Add(x =>
                        x.Method == HttpMethod.Post
-                       && x.RequestUri.OriginalString == $"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network).Node}/thorchain/deposit"
+                       && x.RequestUri.OriginalString == $"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network.Value).Node}/thorchain/deposit"
                        , new HttpResponseMessage
                        {
                            Content = new StringContent(expectedDepositResult)
@@ -782,7 +803,7 @@ namespace XchainDotnet.Thorchain.Tests
                 {
                     x =>
                         x.Method == HttpMethod.Get
-                        && x.RequestUri.OriginalString == $"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network).Node}/txs/{hash}",
+                        && x.RequestUri.OriginalString == $"{this.thorClient.ClientUrl.GetByNetwork(this.thorClient.Network.Value).Node}/txs/{hash}",
                     new HttpResponseMessage
                     {
                         Content = new StringContent(tempres)

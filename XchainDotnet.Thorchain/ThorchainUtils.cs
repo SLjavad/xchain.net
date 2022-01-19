@@ -19,6 +19,8 @@ namespace XchainDotnet.Thorchain
     /// </summary>
     public class ThorchainUtils
     {
+        public const string DEFAULT_EXPLORER_URL = "https://viewblock.io/thorchain";
+
         /// <summary>
         /// Get Default Client URL
         /// </summary>
@@ -36,12 +38,25 @@ namespace XchainDotnet.Thorchain
         /// Get Default Explorer URL
         /// </summary>
         /// <returns>Default <see cref="ExplorerUrl"/> Object</returns>
-        public static ExplorerUrl GetDefaultExplorerUrl()
+        public static ExplorerUrls GetDefaultExplorerUrl()
         {
-            return new ExplorerUrl
+            return new ExplorerUrls
             {
-                Testnet = "https://testnet.thorchain.net/#",
-                Mainnet = "https://thorchain.net/#"
+                Address = new ExplorerUrl
+                {
+                    Mainnet = $"{DEFAULT_EXPLORER_URL}/address",
+                    Testnet = $"{DEFAULT_EXPLORER_URL}/address"
+                },
+                Root = new ExplorerUrl
+                {
+                    Testnet = $"{DEFAULT_EXPLORER_URL}?network=testnet",
+                    Mainnet = DEFAULT_EXPLORER_URL
+                },
+                Tx = new ExplorerUrl
+                {
+                    Mainnet = $"{DEFAULT_EXPLORER_URL}/tx",
+                    Testnet = $"{DEFAULT_EXPLORER_URL}/tx"
+                }
             };
         }
 
@@ -322,14 +337,9 @@ namespace XchainDotnet.Thorchain
         public static Fees GetDefaultFees()
         {
             var fee = ThorchainConstantValues.DEFAULT_GAS_VALUE;
+            var res = FeeUtil.SingleFee(FeeType.@base, fee);
 
-            return new Fees
-            {
-                Type = FeeType.@base,
-                Average = fee,
-                Fast = fee,
-                Fastest = fee
-            };
+            return res;
         }
 
         /// <summary>
@@ -338,5 +348,82 @@ namespace XchainDotnet.Thorchain
         /// <param name="result">The response from the node</param>
         /// <returns>true or false</returns>
         public static bool IsBroadcastSuccess(BroadcastTxCommitResult result) => result.Logs != null;
+
+        public static string GetExplorerAddressUrl(ExplorerUrls explorerUrls , Network network , string address)
+        {
+            var url = $"{explorerUrls.Address.GetExplorerUrlByNetwork(network)}/{address}";
+            return network switch
+            {
+                Network.mainnet => url,
+                Network.testnet => $"{url}?network=testnet",
+                _ => throw new Exception("invalid network"),
+            };
+        }
+
+        public static string GetExplorerTxUrl(ExplorerUrls explorerUrls, Network network, string txId)
+        {
+            var url = $"{explorerUrls.Tx.GetExplorerUrlByNetwork(network)}/{txId}";
+            return network switch
+            {
+                Network.mainnet => url,
+                Network.testnet => $"{url}?network=testnet",
+                _ => throw new Exception("invalid network"),
+            };
+        }
+
+        public static TxData GetDepositTxDataFromLogs(List<TxLog> logs , string address)
+        {
+            var events = logs[0]?.Events;
+            if (events == null || events.Count == 0)
+            {
+                throw new Exception("No events in logs available");
+            }
+
+            List<TransferData> accum = new List<TransferData>();
+
+            List<TransferData> transferDataList = events.Aggregate(accum, (acc, txEvent) =>
+            {
+                if (txEvent.Type == "transfer")
+                {
+                    int index = 0;
+                    return txEvent.Attributes.Aggregate(acc, (acc2, attr) =>
+                    {
+                        if (index % 3 == 0)
+                        {
+                            acc2.Add(new TransferData { Amount = 0, Recipient = "", Sender = "" });
+                        }
+                        var newData = acc2.Last();
+                        if (attr.Key == "sender") newData.Sender = attr.Value;
+                        if (attr.Key == "recipient") newData.Recipient = attr.Value;
+                        if (attr.Key == "amount") newData.Amount = decimal.Parse(attr.Value.Replace("rune",""));
+                        return acc2;
+
+                    });
+                }
+                return acc;
+            });
+            
+            TxData txDataAcc = new();
+            txDataAcc.Type = TxType.transfer;
+
+            TxData txData = transferDataList.Where(x => x.Sender == address || x.Recipient == address)?
+                .Aggregate(txDataAcc, (acc, transferData) =>
+               {
+                   acc.From.Add(new TxFrom
+                   {
+                       From = transferData.Sender,
+                       Amount = transferData.Amount
+                   });
+                   acc.To.Add(new TxTo
+                   {
+                       To = transferData.Recipient,
+                       Amount = transferData.Amount
+                   });
+
+                   return acc;
+               });
+
+            return txData;
+        }
     }
 }
